@@ -1,3 +1,4 @@
+import React from "react";
 import Login from "./Login";
 import { BrowserRouter, Route, Routes } from "react-router-dom";
 import "./style.css";
@@ -16,7 +17,7 @@ import CreateStage from "./CreateStage";
 
 function App() {
   return (
-    <BrowserRouter>
+    <BrowserRouter basename="/">
       <Routes>
         <Route path="/" element={<Dashboard />}>
           <Route path="" element={<Home />}></Route>

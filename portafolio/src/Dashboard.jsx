@@ -80,7 +80,7 @@ function Dashboard() {
                   <span className="ms-1 d-none d-sm-inline">Usuarios</span>{" "}
                 </Link>
               </li>
-              <li>
+              {/* <li>
                 <Link
                   to="profile"
                   className="nav-link px-0 align-middle text-white"
@@ -88,7 +88,7 @@ function Dashboard() {
                   <i className="fs-4 bi-person"></i>{" "}
                   <span className="ms-1 d-none d-sm-inline">Perfil</span>
                 </Link>
-              </li>
+              </li> */}
               <li onClick={handleLogout}>
                 <a href="#" className="nav-link px-0 align-middle text-white">
                   <i className="fs-4 bi-power"></i>{" "}
