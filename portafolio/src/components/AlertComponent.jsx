@@ -28,7 +28,7 @@ const AlertComponent = ({ emptyFieldsMessage, handleCloseEmpty }) => {
 };
 
 AlertComponent.propTypes = {
-  emptyFieldsMessage: PropTypes.string,
+  emptyFieldsMessage: PropTypes.bool,
   handleCloseEmpty: PropTypes.func,
 };
 
