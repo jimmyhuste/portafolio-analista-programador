@@ -19,6 +19,7 @@ class CrearPersonaController {
   static getById(req, res) {
     const id = req.params.id;
     Persona.getById(id, (result) => {
+      console.log(result)
       if (result) {
         res.json({ data: result });
       } else {

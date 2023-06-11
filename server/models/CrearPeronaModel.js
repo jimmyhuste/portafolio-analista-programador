@@ -25,7 +25,7 @@ class Persona {
   }
 
   static getById(id, callback) {
-    const sql = "SELECT * FROM personas p JOIN usuarios u ON p.rut = u.rut WHERE u.id = ?;";
+    const sql = "SELECT * FROM personas p JOIN usuarios u ON p.rut = u.rut WHERE p.id = ?;";
     db.query(sql, [id], (error, results) => {
       if (error) throw error;
       if (results.length > 0) {

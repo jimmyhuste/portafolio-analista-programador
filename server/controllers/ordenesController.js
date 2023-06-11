@@ -12,7 +12,8 @@ class OrdenesController {
                     message: error
                 });
             } else {
-                res.json(results);
+
+                res.json({ Status: "Success", Results: results });
             }
         });
 
@@ -51,14 +52,14 @@ class OrdenesController {
             tipo_factura,
             fecha_facturacion,
             licencia } = req.body;
-       
 
-        if ( validarRut(rut_paciente)) {
+
+        if (validarRut(rut_paciente)) {
             OrdenesModel.create(
                 {
-                    nombre, apellido, fecha_nacimiento, fecha_creacion,etapa,
-                    numero_ficha,rut_paciente,centro,rut_doctor,tipo_trabajo,protesis,completitud,
-                    color,ubicacion,indicaciones,tipo_factura,fecha_facturacion,licencia
+                    nombre, apellido, fecha_nacimiento, fecha_creacion, etapa,
+                    numero_ficha, rut_paciente, centro, rut_doctor, tipo_trabajo, protesis, completitud,
+                    color, ubicacion, indicaciones, tipo_factura, fecha_facturacion, licencia
                 },
                 (error, ordenId) => {
                     if (error) {
@@ -104,11 +105,10 @@ class OrdenesController {
     static update(req, res) {
         const orderId = req.params.id;
         const data = req.body;
-        const { rut_paciente } = req.body;
-
-       
-        if (validarRut(rut_paciente)) {
+        const { patientRut } = req.body;
+        if (validarRut(patientRut)) {
             OrdenesModel.update(orderId, data, (error, orderId) => {
+                console.log("hola")
                 if (error) {
                     res.status(400).json({
                         estado: 'Error',
@@ -116,6 +116,7 @@ class OrdenesController {
                     });
                 } else {
                     res.json({
+                        Status: "Success",
                         message: 'Orden de trabajo actualizada exitosamente',
                     });
                 }

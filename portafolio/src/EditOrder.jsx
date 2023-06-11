@@ -6,6 +6,7 @@ import ChileanRutify from "chilean-rutify";
 
 function EditOrder() {
   const { id } = useParams();
+  const token = localStorage.getItem("token");
   const navigate = useNavigate();
   const [data, setData] = useState({
     creationDate: "",
@@ -71,40 +72,46 @@ function EditOrder() {
   };
 
   useEffect(() => {
-    axios.get("http://localhost:8081/getOrder/" + id).then((res) => {
-      console.log(res.data.Result);
-      const creationDate = new Date(res.data.Result[0].fecha_creacion);
-      creationDate.setDate(creationDate.getDate() - 1);
-      const billinghDate = new Date(res.data.Result[0].fecha_facturacion);
-      billinghDate.setDate(billinghDate.getDate() - 1);
-      const patientBirthDate = new Date(res.data.Result[0].patient_birth_date);
-      patientBirthDate.setDate(patientBirthDate.getDate() - 1);
-      setData({
-        ...data,
-        creationDate: creationDate,
-        fileNumber: res.data.Result[0].numero_ficha,
-        patientName: res.data.Result[0].patient_name,
-        patientLastName: res.data.Result[0].patient_last_name,
-        patientRut: res.data.Result[0].rut_paciente,
-        patientBirthDate: patientBirthDate,
-        medicalCenter: res.data.Result[0].centro,
-        doctorName: res.data.Result[0].doctor_name,
-        doctorLastName: res.data.Result[0].doctor_last_name,
-        doctorRut: res.data.Result[0].rut_doctor,
-        workType: res.data.Result[0].tipo_trabajo,
-        prothesis: res.data.Result[0].protesis,
-        completitude: res.data.Result[0].completitud,
-        color: res.data.Result[0].color,
-        location: res.data.Result[0].ubicacion,
-        indications: res.data.Result[0].indicaciones,
-        billing: res.data.Result[0].tipo_factura,
-        billingDate: billinghDate,
-        licence: res.data.Result[0].licencia,
+    axios
+      .get("http://localhost:8081/api/ordenes/" + id, {
+        headers: {
+          Authorization: `Bearer ${token}`, // Include the token in the Authorization header
+        },
+      })
+      .then((res) => {
+        console.log(res.data);
+        const creationDate = new Date(res.data.fecha_creacion);
+        creationDate.setDate(creationDate.getDate() - 1);
+        const billinghDate = new Date(res.data.fecha_facturacion);
+        billinghDate.setDate(billinghDate.getDate() - 1);
+        const patientBirthDate = new Date(res.data.patient_birth_date);
+        patientBirthDate.setDate(patientBirthDate.getDate() - 1);
+        setData({
+          ...data,
+          creationDate: creationDate,
+          fileNumber: res.data.numero_ficha,
+          patientName: res.data.patient_name,
+          patientLastName: res.data.patient_last_name,
+          patientRut: res.data.rut_paciente,
+          patientBirthDate: patientBirthDate,
+          medicalCenter: res.data.centro,
+          doctorName: res.data.doctor_name,
+          doctorLastName: res.data.doctor_last_name,
+          doctorRut: res.data.rut_doctor,
+          workType: res.data.tipo_trabajo,
+          prothesis: res.data.protesis,
+          completitude: res.data.completitud,
+          color: res.data.color,
+          location: res.data.ubicacion,
+          indications: res.data.indicaciones,
+          billing: res.data.tipo_factura,
+          billingDate: billinghDate,
+          licence: res.data.licencia,
+        });
+        setName({
+          name: res.data.numero_ficha,
+        });
       });
-      setName({
-        name: res.data.Result[0].numero_ficha,
-      });
-    });
   }, []);
 
   useEffect(() => {
@@ -433,7 +440,6 @@ function EditOrder() {
       data.stage === "" ||
       data.color === "" ||
       data.location === "" ||
-      data.indications === "" ||
       data.billing === "" ||
       data.billingDate === "" ||
       data.licence === ""
@@ -490,8 +496,13 @@ function EditOrder() {
         billingDate: formattedBillingDay,
       };
       axios
-        .put("http://localhost:8081/updateOrder/" + id, updatedData)
+        .put("http://localhost:8081/api/ordenes/" + id, updatedData, {
+          headers: {
+            Authorization: `Bearer ${token}`, // Include the token in the Authorization header
+          },
+        })
         .then((res) => {
+          console.log(res);
           if (res.data.Status === "Success") {
             navigate("/orders");
           }
@@ -499,8 +510,13 @@ function EditOrder() {
         .catch((err) => console.log(err));
     } else {
       axios
-        .put("http://localhost:8081/updateOrder/" + id, data)
+        .put("http://localhost:8081/api/ordenes/" + id, data, {
+          headers: {
+            Authorization: `Bearer ${token}`, // Include the token in the Authorization header
+          },
+        })
         .then((res) => {
+          console.log(res);
           if (res.data.Status === "Success") {
             navigate("/orders");
           }

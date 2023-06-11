@@ -6,6 +6,7 @@ import DataTableExtensions from "react-data-table-component-extensions";
 import "react-data-table-component-extensions/dist/index.css";
 
 function Order() {
+  const token = localStorage.getItem("token");
   const [dataLoaded, setDataLoaded] = useState(false);
   const [data, setData] = useState([]);
   const [dataTable, setDataTable] = useState({
@@ -102,28 +103,33 @@ function Order() {
   ];
 
   useEffect(() => {
-    axios.get("http://localhost:8081/getOrders").then((res) => {
-      if (res.data.Status === "Success") {
-        setData(res.data.Result);
-        setDataTable();
-        console.log(res.data.Result);
-        setDataTable(
-          res.data.Result.map((order) => {
-            return {
-              id: order.id,
-              creationDate: formatDate(order.fecha_creacion),
-              fileNumber: order.numero_ficha,
-              medicalCenter: order.nombre_centro,
-              workType: order.nombre_trabajo,
-              stage: order.nombre_etapas,
-            };
-          })
-        );
-        setDataLoaded(true);
-      } else {
-        alert("Error");
-      }
-    });
+    axios
+      .get("http://localhost:8081/api/ordenes", {
+        headers: {
+          Authorization: `Bearer ${token}`, // Include the token in the Authorization header
+        },
+      })
+      .then((res) => {
+        if (res.data.Status === "Success") {
+          setData(res.data.Results);
+          console.log(res);
+          setDataTable(
+            res.data.Results.map((order) => {
+              return {
+                id: order.id,
+                creationDate: formatDate(order.fecha_creacion),
+                fileNumber: order.numero_ficha,
+                medicalCenter: order.nombre_centro,
+                workType: order.nombre_trabajo,
+                stage: order.nombre_etapas,
+              };
+            })
+          );
+          setDataLoaded(true);
+        } else {
+          alert("Error");
+        }
+      });
   }, []);
 
   const formatDate = (creationDate) => {
@@ -147,9 +153,9 @@ function Order() {
     });
   };
 
-  useEffect(() => {
-    console.log("dataTable", dataTable);
-  }, [dataTable]);
+  // useEffect(() => {
+  //   console.log("dataTable", dataTable);
+  // }, [dataTable]);
 
   return (
     <div className="d-flex flex-column mt-3 border px-4 py-2">
