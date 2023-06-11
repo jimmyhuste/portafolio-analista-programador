@@ -224,15 +224,14 @@ function CreateUser() {
     formdata.append("name", data.name);
     formdata.append("lastName", data.lastName);
     formdata.append("birthDate", data.birthDate);
-    formdata.append("adress", data.address);
+    formdata.append("address", data.address);
     formdata.append("phone", data.phone);
     formdata.append("email", data.email);
-    formdata.append("nombre_rol", data.role);
+    formdata.append("role", data.role);
     formdata.append("confirmPassword", data.confirmPassword);
     console.log(formdata);
-    console.log(data);
     axios
-      .post("http://localhost:8081/api/persona", data, {
+      .post("http://localhost:8081/api/persona", formdata, {
         headers: {
           Authorization: `Bearer ${token}`, // Include the token in the Authorization header
         },
@@ -244,11 +243,10 @@ function CreateUser() {
         }
       })
       .catch((err) => {
-        if (err.response && err.response.status === 400) {
-          console.log(err);
-          // notify();
+        if (err.response.status === 400) {
+          notify();
         } else {
-          console.log(err.response.data.error);
+          console.log(err.response);
         }
       });
   };

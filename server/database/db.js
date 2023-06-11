@@ -7,23 +7,24 @@ const dbUser = process.env.DB_USER;
 const dbPassword = process.env.DB_PASSWORD;
 const dbName = process.env.DB_NAME;
 const dbSsl = process.env.DB_SSL;
+const dbPort = process.env.DB_PORT;
 
 const connection = mysql.createConnection({
   host: dbHost,
   user: dbUser,
+  port: dbPort,
   password: dbPassword,
   database: dbName,
   ssl: {
     ca: fs.readFileSync(dbSsl)
   }
-
 });
 
 
 connection.connect((error) => {
   if (error) {
     throw error;
-  }else{
+  } else {
     console.log('Conexión exitosa a la base de datos MySQL');
   }
 });
@@ -32,10 +33,11 @@ connection.query('USE proyecto_01', (err) => {
   if (err) {
     console.error('Error al seleccionar la base de datos:', err);
     return;
-  }else{
+  } else {
     console.log('Base de datos seleccionada');
-    
-  }})
+
+  }
+})
 
 
 

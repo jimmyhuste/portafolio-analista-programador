@@ -1,5 +1,5 @@
 import axios from "axios";
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import DataTable from "react-data-table-component";
 import DataTableExtensions from "react-data-table-component-extensions";
@@ -57,7 +57,7 @@ function User() {
           src={
             row.imagen
               ? `http://localhost:8081/images/${row.imagen}`
-              : "http://localhost:8081/storage/imgs/default_picture.jpg"
+              : "http://localhost:8081/images/default_picture.jpg"
           }
           alt=""
           className="userImage"

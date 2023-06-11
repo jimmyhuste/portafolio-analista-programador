@@ -28,53 +28,50 @@ class CrearPersonaController {
   }
 
   static create(req, res) {
-    uploadMiddleware.single('imagen')(req, res, (err) => {
-      if (err) {
-        console.error('Error al cargar la imagen:', err);
-        // Manejo del error al cargar la imagen
-        return;
+
+    // Aquí puedes acceder a la imagen cargada a través de req.file
+    const image = req.file ? req.file.filename : null;
+    const { name, lastName, rut, email, birthDate, address, password, confirmPassword, role, phone } = req.body;
+    const validImageFormats = ['image/png', 'image/jpeg', 'image/jpg'];
+
+    if (password !== confirmPassword) {
+      res.status(400).json({
+        estado: 'Failed',
+        message: 'Las contraseñas no coinciden',
+      });
+      return;
+    }
+
+    if (req.file !== undefined) {
+      if (!validImageFormats.includes(req.file.mimetype)) {
+
+        return res.json({ Status: "Error", Error: "Invalid file format. Only PNG, JPG, and JPEG are allowed." });
       }
+    }
 
-      // Aquí puedes acceder a la imagen cargada a través de req.file
-      const imagen = req.file ? req.file.filename : null;
-      const { name, lastName, rut, email, birthDate, address, password, confirmPassword, role, image, phone } = req.body;
-      console.log(req.body)
-      const allowedFormats = /\.(png|jpe?g)$/i;
-
-
-
-      if (password !== confirmPassword) {
-        res.status(400).json({
-          estado: 'Failed',
-          message: 'Las contraseñas no coinciden',
-        });
-        return;
-      }
-
-      if (validarRut(rut)) {
-        Persona.create(
-          { name, lastName, rut, email, birthDate, address, password, confirmPassword, role, image, phone },
-          (error, personaId) => {
-            if (error) {
-              res.status(400).json({
-                estado: 'Error',
-                message: error,
-              });
-            } else {
-              res.json({
-                message: 'Persona creada exitosamente',
-                Status: "Success",
-              });
-            }
+    if (validarRut(rut)) {
+      Persona.create(
+        { name, lastName, rut, email, birthDate, address, password, confirmPassword, role, image, phone },
+        (error, personaId) => {
+          if (error) {
+            res.status(400).json({
+              estado: 'Error',
+              message: error,
+            });
+          } else {
+            res.json({
+              message: 'Persona creada exitosamente',
+              Status: "Success",
+            });
           }
-        );
-      } else {
-        res.status(400).json({
-          estado: 'Rut inválido',
-          message: 'El Rut debe tener el siguiente formato: [ 11111111-1 ]',
-        });
-      }
-    });
+        }
+      );
+    } else {
+      res.status(400).json({
+        estado: 'Rut inválido',
+        message: 'El Rut debe tener el siguiente formato: [ 11111111-1 ]',
+      });
+    }
   }
 
 

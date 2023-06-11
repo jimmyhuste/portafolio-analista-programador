@@ -17,7 +17,7 @@ class Persona {
   }
 
   static getAll(callback) {
-    const sql = 'SELECT u.id, u.rut, u.imagen, p.rut, p.nombre, p.apellido, p.fecha_nacimiento, p.direccion, p.celular, p.email, r.nombre_rol AS nombre_rol FROM usuarios u JOIN personas p ON u.rut = p.rut JOIN roles r ON p.rol_id = r.id';
+    const sql = 'SELECT r.nombre_rol, p.nombre, p.apellido, u.imagen, p.email, p.id, p.rut FROM personas p JOIN roles r ON p.rol_id = r.id JOIN usuarios u on u.rut = p.rut;';
     db.query(sql, (error, results) => {
       if (error) throw error;
       callback(results);
@@ -49,10 +49,9 @@ class Persona {
 
   static create(personaData, callback) {
     const { name, lastName, rut, email, birthDate, address, password, confirmPassword, role, image, phone } = personaData;
-
+    console.log("Personadata", personaData)
     const existSql = 'SELECT * FROM personas WHERE rut = ? OR email = ?';
     db.query(existSql, [rut, email], (error, results) => {
-      console.log(results)
       if (error) {
         callback(error);
         return;
@@ -74,7 +73,7 @@ class Persona {
 
       bcrypt.hash(password, 10, (error, hashedPass) => {
         if (error) {
-          console.error('Error al aplicar el hash al RUT:', error);
+          console.error('Error al aplicar el hash al password:', error);
           return;
         }
 
