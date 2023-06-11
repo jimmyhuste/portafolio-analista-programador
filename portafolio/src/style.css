@@ -1,0 +1,79 @@
+.loginPage {
+  background: url("./assets/loginbackground1.jpg");
+  background: linear-gradient(rgba(11, 11, 11, 0.5), rgba(10, 10, 10, 0.5)),
+    url("./assets/loginbackground1.jpg");
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: 100% 120%;
+}
+
+.loginForm {
+  background-color: rgba(1, 28, 101, 0.6);
+  color: white;
+}
+
+.userImage {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+}
+
+.inputDescription {
+  height: 1px; /* Set the desired height here */
+  overflow-y: auto;
+}
+
+.error-message {
+  visibility: hidden;
+  height: 0;
+  transition: visibility 0.3s, height 0.3s;
+}
+
+.error-message.show {
+  visibility: visible;
+  height: auto;
+}
+
+.alert-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  z-index: 9999;
+}
+
+.alert {
+  text-align: center;
+}
+
+.alert-content {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.alert-close {
+  align-self: center;
+  color: #000;
+  padding: 0 10px;
+  margin-left: 40px;
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.alert-close-text {
+  font-size: 20px;
+  font-weight: bold;
+  cursor: pointer;
+  position: relative;
+  top: -2px;
+}
