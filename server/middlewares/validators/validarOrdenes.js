@@ -7,7 +7,7 @@ const validarOrdenes = () => {
             .notEmpty()
             .isLength({ min: 3, max: 25 })
             .withMessage('El nombre de paciente debe tener entre 3 y 25 caracteres')
-            .custom((value) => !/\d/.test(value))
+            .custom((value) => !/^[A-Za-zÀ-ÿ]*(?:\s[A-Za-zÀ-ÿ]*){0,2}$/.test(value))
             .withMessage('El nombre de paciente no puede contener caracteres numéricos')
             .escape(),
 
@@ -16,7 +16,7 @@ const validarOrdenes = () => {
             .notEmpty()
             .isLength({ min: 3, max: 25 })
             .withMessage('El apellido de paciente debe tener entre 3 y 25 caracteres')
-            .custom((value) => !/\d/.test(value))
+            .custom((value) => !/^[A-Za-zÀ-ÿ]*(?:\s[A-Za-zÀ-ÿ]*){0,2}$/.test(value))
             .withMessage('El apellido de paciente no puede contener caracteres numéricos')
             .escape(),
         check('patientRut', 'Rut de paciente es inválido, debe tener el siguiente formato: [ 11111111-1')
@@ -29,7 +29,7 @@ const validarOrdenes = () => {
             .notEmpty()
             .isLength({ min: 3, max: 25 })
             .withMessage('El nombre de doctor debe tener entre 3 y 25 caracteres')
-            .custom((value) => !/\d/.test(value))
+            .custom((value) => !/^[A-Za-zÀ-ÿ]*(?:\s[A-Za-zÀ-ÿ]*){0,2}$/.test(value))
             .withMessage('El nombre de doctor no puede contener caracteres numéricos')
             .escape(),
 
@@ -38,7 +38,7 @@ const validarOrdenes = () => {
             .notEmpty()
             .isLength({ min: 3, max: 25 })
             .withMessage('El apellido de doctor debe tener entre 3 y 25 caracteres')
-            .custom((value) => !/\d/.test(value))
+            .custom((value) => !/^[A-Za-zÀ-ÿ]*(?:\s[A-Za-zÀ-ÿ]*){0,2}$/.test(value))
             .withMessage('El apellido de doctor no puede contener caracteres numéricos')
             .escape(),
         check('doctorRut', 'Rut de doctor es inválido, debe tener el siguiente formato: [ 11111111-1')
@@ -64,7 +64,9 @@ const validarOrdenes = () => {
         check('fileNumber', 'Número de ficha es inválido')
             .notEmpty()
             .isInt()
-            .withMessage('El número de ficha debe ser un número entero'),
+            .withMessage('El número de ficha debe ser un número entero').
+            isLength({ max: 8 })
+            .withMessage('La etapa debe ser un número entero'),
 
         check('medicalCenter', 'Centro es inválido')
             .notEmpty()
@@ -108,12 +110,12 @@ const validarOrdenes = () => {
             .withMessage('El tipo de factura debe ser un número entero'),
 
         check('billingDate', 'Fecha de facturación es inválida')
-            .optional({ checkFalsy: true })
+            .notEmpty()
             .isDate()
             .withMessage('La fecha de facturación debe tener el siguiente formato: YYYY-MM-DD'),
 
         check('license', 'Licencia es inválida')
-            .optional({ checkFalsy: true })
+            .notEmpty()
             .notEmpty()
             .isInt()
             .withMessage('La licencia debe ser un número entero'),

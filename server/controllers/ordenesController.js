@@ -38,28 +38,51 @@ class OrdenesController {
     }
 
     static create(req, res) {
-        const { nombre, apellido, fecha_nacimiento, fecha_creacion, etapa,
-            numero_ficha,
-            rut_paciente,
-            centro,
-            rut_doctor,
-            tipo_trabajo,
-            protesis,
-            completitud,
+        const { creationDate,
+            fileNumber,
+            patientName,
+            patientLastName,
+            patientRut,
+            patientBirthDate,
+            medicalCenter,
+            doctorName,
+            doctorLastName,
+            doctorRut,
+            workType,
+            prothesis,
+            completitude,
+            stage,
             color,
-            ubicacion,
-            indicaciones,
-            tipo_factura,
-            fecha_facturacion,
-            licencia } = req.body;
+            location,
+            indications,
+            billing,
+            billingDate,
+            licence } = req.body;
+        console.log(req.body)
 
-
-        if (validarRut(rut_paciente)) {
+        if (validarRut(patientRut)) {
             OrdenesModel.create(
                 {
-                    nombre, apellido, fecha_nacimiento, fecha_creacion, etapa,
-                    numero_ficha, rut_paciente, centro, rut_doctor, tipo_trabajo, protesis, completitud,
-                    color, ubicacion, indicaciones, tipo_factura, fecha_facturacion, licencia
+                    creationDate,
+                    fileNumber,
+                    patientName,
+                    patientLastName,
+                    patientRut,
+                    patientBirthDate,
+                    medicalCenter,
+                    doctorName,
+                    doctorLastName,
+                    doctorRut,
+                    workType,
+                    prothesis,
+                    completitude,
+                    stage,
+                    color,
+                    location,
+                    indications,
+                    billing,
+                    billingDate,
+                    licence
                 },
                 (error, ordenId) => {
                     if (error) {
@@ -83,6 +106,7 @@ class OrdenesController {
 
 
     }
+
     static deleteOrden(req, res) {
         const { id } = req.params;
 
@@ -93,7 +117,7 @@ class OrdenesController {
                     return;
                 }
 
-                res.json({ message: 'Orden de trabajo eliminada exitosamente', id: id });
+                res.json({ Status: "Success", message: 'Orden de trabajo eliminada exitosamente', id: id });
             })
             .catch((error) => {
                 console.error('Error:', error);

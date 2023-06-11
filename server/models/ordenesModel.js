@@ -39,30 +39,31 @@ class OrdenesModel {
 
     static create(ordenData, callback) {
         const {
-            nombre,
-            apellido,
-            fecha_nacimiento,
-            fecha_creacion,
-            numero_ficha,
-            rut_paciente,
-            centro,
-            rut_doctor,
-            tipo_trabajo,
-            protesis,
-            completitud,
+            creationDate,
+            fileNumber,
+            patientName,
+            patientLastName,
+            patientRut,
+            patientBirthDate,
+            medicalCenter,
+            doctorName,
+            doctorLastName,
+            doctorRut,
+            workType,
+            prothesis,
+            completitude,
+            stage,
             color,
-            ubicacion,
-            indicaciones,
-            tipo_factura,
-            fecha_facturacion,
-            licencia,
-            etapa
+            location,
+            indications,
+            billing,
+            billingDate,
+            licence,
         } = ordenData;
 
-        console.log(nombre, rut_doctor, rut_paciente);
 
         const existFichaSql = 'SELECT * FROM ordenes_de_trabajo WHERE numero_ficha = ?';
-        db.query(existFichaSql, [numero_ficha], (error, fichaResults) => {
+        db.query(existFichaSql, [fileNumber], (error, fichaResults) => {
             if (error) {
                 console.error('Error al ejecutar la consulta existFichaSql:', error);
                 callback({ message: 'Error al ejecutar la consulta.' }, null);
@@ -74,7 +75,7 @@ class OrdenesModel {
                 return;
             }
 
-            const sqlPersonas = 'INSERT INTO personas (rut, nombre, apellido, fecha_nacimiento, rol_id) VALUES (?)';
+            const sqlPersonas = 'INSERT INTO personas (rut, nombre, apellido, fecha_nacimiento, rol_id) VALUES ?';
             const sqlOrdenes = `INSERT INTO ordenes_de_trabajo (
                 fecha_creacion,
                 numero_ficha,
@@ -93,30 +94,31 @@ class OrdenesModel {
             ) VALUES (?)`;
 
             const valuesP = [
-                [rut_doctor, nombre, apellido, fecha_nacimiento, 3],
-                [rut_paciente, nombre, apellido, fecha_nacimiento, 5]
+                [patientRut, patientName, patientLastName, patientBirthDate, 5],
+                [doctorRut, doctorName, doctorLastName, null, 3]
             ];
+
             const valuesO = [[
-                fecha_creacion,
-                numero_ficha,
-                rut_paciente,
-                centro,
-                rut_doctor,
-                tipo_trabajo,
-                protesis,
-                completitud,
+                creationDate,
+                fileNumber,
+                patientRut,
+                medicalCenter,
+                doctorRut,
+                workType,
+                prothesis,
+                completitude,
                 color,
-                ubicacion,
-                indicaciones,
-                tipo_factura,
-                fecha_facturacion,
-                licencia
+                location,
+                indications,
+                billing,
+                billingDate,
+                licence
             ]];
 
             let ordenId; // Variable para almacenar el ID de la orden de trabajo
 
             new Promise((resolve, reject) => {
-                db.query(sqlPersonas, valuesP, (error, result) => {
+                db.query(sqlPersonas, [valuesP], (error, result) => {
                     if (error) {
                         console.error('Error al ejecutar la consulta de inserción en la tabla personas:', error);
                         reject(error);
@@ -139,13 +141,12 @@ class OrdenesModel {
                     });
                 })
                 .then((result) => {
-                    const sqlHistorial = `INSERT INTO historial_ordenes_etapas_estados (id_orden, nro_ficha, id_etapa, fecha_inicio_estado, descripcion) VALUES (?)`;
+                    const sqlHistorial = `INSERT INTO historial_ordenes_etapas_estados (id_orden, nro_ficha, id_etapa, fecha_inicio_estado) VALUES (?)`;
                     const valuesHistorial = [[
                         ordenId,
-                        numero_ficha,
-                        etapa,
-                        new Date(),
-                        indicaciones
+                        fileNumber,
+                        stage,
+                        new Date()
                     ]];
 
                     db.query(sqlHistorial, valuesHistorial, (error, result) => {

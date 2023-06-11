@@ -1,5 +1,5 @@
 import axios from "axios";
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import "./style.css";
 import AlertComponent from "./components/AlertComponent";
@@ -7,6 +7,7 @@ import ChileanRutify from "chilean-rutify";
 
 function CreateOrder() {
   const navigate = useNavigate();
+  const token = localStorage.getItem("token");
   const [creationDateErrorMessage, setCreationDateErrorMessage] =
     useState(false);
   const [fileNumberErrorMessage, setFileNumberErrorMessage] = useState(false);
@@ -398,29 +399,15 @@ function CreateOrder() {
     if (hasError) {
       return;
     }
-    const formdata = new FormData();
-    formdata.append("creationDate", data.creationDate);
-    formdata.append("fileNumber", data.fileNumber);
-    formdata.append("patientName", data.patientName);
-    formdata.append("patientLastName", data.patientLastName);
-    formdata.append("patientRut", data.patientRut);
-    formdata.append("patientBirthDate", data.patientBirthDate);
-    formdata.append("medicalCenter", data.medicalCenter);
-    formdata.append("doctorName", data.doctorName);
-    formdata.append("doctorLastName", data.doctorLastName);
-    formdata.append("doctorRut", data.doctorRut);
-    formdata.append("workType", data.workType);
-    formdata.append("prothesis", data.prothesis);
-    formdata.append("completitude", data.completitude);
-    formdata.append("stage", data.stage);
-    formdata.append("color", data.color);
-    formdata.append("location", data.location);
-    formdata.append("indications", data.indications);
-    formdata.append("billing", data.billing);
-    formdata.append("licence", data.licence);
-    axios.post("http://localhost:8081/createOrder", data).then(() => {
-      navigate("/orders");
-    });
+    axios
+      .post("http://localhost:8081/api/ordenes/", data, {
+        headers: {
+          Authorization: `Bearer ${token}`, // Include the token in the Authorization header
+        },
+      })
+      .then(() => {
+        navigate("/orders");
+      });
   };
   return (
     <div className="d-flex flex-column mx-auto align-items-center pt-2 mt-3 border w-75">

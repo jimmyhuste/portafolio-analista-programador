@@ -144,13 +144,19 @@ function Order() {
   };
 
   const handleDelete = (id) => {
-    axios.delete("http://localhost:8081/deleteOrder/" + id).then((res) => {
-      if (res.data.Status === "Success") {
-        window.location.reload(true);
-      } else {
-        alert(id);
-      }
-    });
+    axios
+      .delete("http://localhost:8081/api/ordenes/" + id, {
+        headers: {
+          Authorization: `Bearer ${token}`, // Include the token in the Authorization header
+        },
+      })
+      .then((res) => {
+        if (res.data.Status === "Success") {
+          window.location.reload(true);
+        } else {
+          alert(id);
+        }
+      });
   };
 
   // useEffect(() => {
