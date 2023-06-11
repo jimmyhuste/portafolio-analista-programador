@@ -1,6 +1,9 @@
 import axios from "axios";
 import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
+import DataTable from "react-data-table-component";
+import DataTableExtensions from "react-data-table-component-extensions";
+import "react-data-table-component-extensions/dist/index.css";
 
 function User() {
   const [data, setData] = useState([]);
@@ -22,9 +25,9 @@ function User() {
       });
   }, []);
 
-  const handleDelete = (id) => {
+  const handleDelete = (rut) => {
     axios
-      .delete("http://localhost:8081/api/persona/" + id, {
+      .delete("http://localhost:8081/api/persona/" + rut, {
         headers: {
           Authorization: `Bearer ${token}`, // Include the token in the Authorization header
         },
@@ -38,67 +41,130 @@ function User() {
       });
   };
 
+  const columns = [
+    {
+      name: "Rol",
+      selector: (row) => row.nombre_rol,
+      sortable: true,
+      cellExport: (row) => row.nombre_rol,
+      maxWidth: "15%",
+      hide: "md",
+    },
+    {
+      name: "Foto perfil",
+      cell: (row) => (
+        <img
+          src={
+            row.imagen
+              ? `http://localhost:8081/images/${row.imagen}`
+              : "http://localhost:8081/storage/imgs/default_picture.jpg"
+          }
+          alt=""
+          className="userImage"
+        />
+      ),
+      excludeExport: true,
+      maxWidth: "10%",
+      hide: "sm",
+    },
+    {
+      name: "Nombre",
+      selector: (row) => row.nombre + " " + row.apellido,
+      sortable: true,
+      cellExport: (row) => row.nombre + " " + row.apellido,
+      maxWidth: "50%",
+    },
+    {
+      name: "Email",
+      selector: (row) => row.email,
+      sortable: true,
+      cellExport: (row) => row.email,
+      maxWidth: "35%",
+      hide: "md",
+    },
+    {
+      name: "Acciones",
+      cell: (row) => (
+        <>
+          <button
+            onClick={() => {
+              // Redirect to the userEdit page
+              window.location.href = `/userEdit/${row.id}`;
+            }}
+            className="btn btn-outline-primary btn-sm me-2"
+          >
+            Editar
+          </button>
+          <button
+            onClick={() => handleDelete(row.rut)}
+            className="btn btn-outline-danger btn-sm"
+          >
+            Eliminar
+          </button>
+        </>
+      ),
+      ignoreExport: true,
+      minWidth: "200px",
+    },
+  ];
+
   return (
-    <div className="px-5 py-3">
+    <div className="d-flex flex-column mt-3 border px-4 py-2">
       <div className="d-flex justify-content-center">
         <h3>Lista de usuarios</h3>
       </div>
-      <Link to="/createuser" className="btn btn-success">
-        Crear usuario
-      </Link>
-      <table className="table">
-        <thead>
-          <tr>
-            <th className="col-sm-2">Rol</th>
-            <th className="col-sm-2">Nombre</th>
-            <th className="col-sm-2">Imagen</th>
-            <th className="col-sm-2">Email</th>
-            <th className="col-sm-2">Acciones</th>
-          </tr>
-        </thead>
-        <tbody>
-          {data.map((user, index) => {
-            return (
-              <tr key={index}>
-                <td>{user.nombre_rol}</td>
-                <td>
-                  {user.nombre} {user.apellido}
-                </td>
-                <td>
-                  {
-                    <img
-                      src={
-                        user.imagen
-                          ? `http://localhost:8081/images/${user.imagen}`
-                          : "http://localhost:8081/images/default_picture.jpg"
-                      }
-                      alt=""
-                      className="userImage"
-                    />
-                  }
-                </td>
-                <td>{user.email}</td>
-                <td>
-                  <Link
-                    to={`/userEdit/` + user.id}
-                    className="btn btn-primary btn-sm me-2"
-                  >
-                    Editar
-                  </Link>
-                  <button
-                    onClick={() => handleDelete(user.rut)}
-                    className="btn btn-danger btn-sm me-2"
-                  >
-                    Eliminar
-                  </button>
-                </td>
-              </tr>
-            );
-          })}
-        </tbody>
-      </table>
+      <DataTableExtensions
+        columns={columns}
+        data={data}
+        filterPlaceholder="Buscar"
+        print={false}
+        fileName="Lista de usuarios"
+      >
+        <DataTable
+          title="Usuarios"
+          defaultSortField="id"
+          defaultSortAsc={false}
+          pagination
+          highlightOnHover
+          paginationComponentOptions={{
+            rowsPerPageText: "Filas por página:",
+            rangeSeparatorText: "de",
+            noRowsPerPage: false,
+            selectAllRowsItem: false,
+            selectAllRowsItemText: "Todos",
+          }}
+        />
+      </DataTableExtensions>
+      <div className="row g-3 p-4">
+        <div className="col-12 col-sm-6 col-md-4 offset-md-2 col-lg-3 offset-lg-3 align-items-center">
+          <Link
+            to="/createuser"
+            className="btn btn-success w-100 h-100 d-flex justify-content-center align-items-center"
+            style={styles.panel}
+          >
+            Crear usuario
+          </Link>
+        </div>
+        <div className="col-12 col-sm-6 col-md-4 col-lg-3 align-items-center">
+          <Link
+            to="/"
+            className="btn btn-danger w-100 h-100 d-flex justify-content-center align-items-center"
+            style={styles.panel}
+          >
+            Volver al inicio
+          </Link>
+        </div>
+      </div>
     </div>
   );
 }
 
 export default User;
+
+const styles = {
+  panel: {
+    height: "50%",
+    maxHeight: "5rem",
+    display: "flex",
+  },
+};

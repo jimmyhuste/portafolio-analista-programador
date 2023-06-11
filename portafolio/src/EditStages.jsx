@@ -1,5 +1,5 @@
 import axios from "axios";
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import DateComponent from "./components/DateComponent";
 
@@ -11,6 +11,14 @@ function EditStages() {
   const [formattedDeliveryDate, setFormattedDeliveryDate] = useState(null);
   const [selectedDeadlineDate, setSelecteDeadlineDate] = useState(null);
   const [formattedDeadineDate, setFormattedDeadineDate] = useState(null);
+  const [emptyFieldsMessage, setEmptyFieldsMessage] = useState(false);
+  const [stageErrorMessage, setStageErrorMessage] = useState(false);
+  const [stateErrorMessage, setStateErrorMessage] = useState(false);
+  const [shippingDateErrorMessage, setShippingDateErrorMessage] =
+    useState(false);
+  const [deadlineErrorMessage, setDeadlineErrorMessage] = useState(false);
+  const [descriptionErrorMessage, setDescriptionErrorMessage] = useState(false);
+  const [descriptionMessage, setDescriptionMessage] = useState(false);
   //ANCHOR - data
   const [data, setData] = useState({
     descripcion: "",
@@ -47,25 +55,38 @@ function EditStages() {
         id_orden: res.data.Result[0].id_orden,
         nro_ficha: res.data.Result[0].nro_ficha,
       });
-      setSelecteDeliveryDate(new Date(res.data.Result[0].fecha_entrega));
-      setSelecteDeadlineDate(new Date(res.data.Result[0].fecha_envio));
+      setSelecteDeliveryDate(
+        res.data.Result[0].fecha_envio
+          ? new Date(res.data.Result[0].fecha_envio)
+          : new Date()
+      );
+
+      setSelecteDeadlineDate(
+        res.data.Result[0].fecha_entrega
+          ? new Date(res.data.Result[0].fecha_entrega)
+          : new Date()
+      );
       setDataLoaded(true);
     });
   }, []);
 
   useEffect(() => {
     if (selectedDeliveryDate) {
-      const formatted = selectedDeliveryDate.toISOString().split("T")[0];
-      setFormattedDeliveryDate(formatted);
-      setData({ ...data, fecha_entrega: formatted });
+      const formattedDelivery = selectedDeliveryDate
+        .toISOString()
+        .split("T")[0];
+      setFormattedDeliveryDate(formattedDelivery);
+      setData({ ...data, fecha_envio: formattedDelivery });
     }
   }, [selectedDeliveryDate]);
 
   useEffect(() => {
     if (selectedDeadlineDate) {
-      const formatted = selectedDeadlineDate.toISOString().split("T")[0];
-      setFormattedDeadineDate(formatted);
-      setData({ ...data, fecha_envio: formatted });
+      const formattedDeadline = selectedDeadlineDate
+        .toISOString()
+        .split("T")[0];
+      setFormattedDeadineDate(formattedDeadline);
+      setData({ ...data, fecha_entrega: formattedDeadline });
     }
   }, [selectedDeadlineDate]);
 
@@ -79,6 +100,107 @@ function EditStages() {
 
   const handleSubmit = (event) => {
     event.preventDefault();
+    // Error handler
+    let hasError = false;
+    // Check if any required fields are empty
+    // if (
+    //   data.id_etapa === "" ||
+    //   data.id_estado === "" ||
+    //   data.fecha_envio === "" ||
+    //   data.fecha_entrega === ""
+    // ) {
+    //   alert("Por favor, complete todos los campos obligatorios.");
+    //   setEmptyFieldsMessage(true);
+    //   return;
+    // }
+    setEmptyFieldsMessage(false);
+    // Validate stage
+    const validStages = [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      "1",
+      "2",
+      "3",
+      "4",
+      "5",
+      "6",
+      "7",
+    ];
+
+    if (!validStages.includes(data.id_etapa)) {
+      setStageErrorMessage(true);
+      hasError = true;
+    } else {
+      setStageErrorMessage(false);
+    }
+    setEmptyFieldsMessage(false);
+    // Validate state
+    const validStates = [1, 2, 3, 4, "1", "2", "3", "4"];
+
+    if (!validStates.includes(data.id_estado)) {
+      setStateErrorMessage(true);
+      hasError = true;
+    } else {
+      setStateErrorMessage(false);
+    }
+    // Validate shippingDate
+    const currentDateForMaxShipping = new Date();
+    const maxShippingDate = currentDateForMaxShipping.setMonth(
+      currentDateForMaxShipping.getMonth() + 12
+    );
+    const currentDateForMinShipping = new Date();
+    const minShippingDate = currentDateForMinShipping.setMonth(
+      currentDateForMinShipping.getMonth() - 12
+    );
+    if (
+      selectedDeliveryDate < minShippingDate ||
+      selectedDeliveryDate > maxShippingDate
+    ) {
+      setShippingDateErrorMessage(true);
+      hasError = true;
+    } else {
+      setShippingDateErrorMessage(false);
+    }
+    // Validate deadline
+    const currentDateForMaxDeadline = new Date();
+    const selectedDeadlineDate = new Date(data.fecha_entrega);
+    const maxDeadlineDate = currentDateForMaxDeadline.setMonth(
+      currentDateForMaxDeadline.getMonth() + 14
+    );
+    const currentDateForMinDeadline = new Date();
+    const minDeadlineDate = currentDateForMinDeadline.setMonth(
+      currentDateForMinDeadline.getMonth() - 12
+    );
+    if (
+      selectedDeadlineDate < minDeadlineDate ||
+      selectedDeadlineDate > maxDeadlineDate
+    ) {
+      setDeadlineErrorMessage(true);
+      hasError = true;
+    } else {
+      setDeadlineErrorMessage(false);
+    }
+    // Validate description
+    if (data.descripcion) {
+      if (data.descripcion.length > 255) {
+        setDescriptionErrorMessage(true);
+        setDescriptionMessage("Indicación muy larga");
+        if (data.descripcion === "") {
+          setDescriptionMessage("");
+        }
+      }
+      hasError = true;
+    } else {
+      setDescriptionErrorMessage(false);
+    }
+    if (hasError) {
+      return;
+    }
     const requestData = {
       ...data,
       fecha_entrega: data.fecha_entrega || "1970-01-01",
@@ -107,29 +229,15 @@ function EditStages() {
 
   return (
     <div className="d-flex flex-column mx-auto align-items-center pt-2 mt-3 border  w-75">
-      <h2>Edición de etapa</h2>
+      <h2>Edición etapa de orden N°{data.id_orden}</h2>
       {dataLoaded && (
         <form className="row g-3 p-4" onSubmit={handleSubmit}>
-          <DateComponent
-            fecha={formattedDeliveryDate}
-            title="Fecha de entrega"
-            onDateChange={handleDeliveryDateChange}
-            col="col-6"
-            name="idDeliveryDate"
-          />
-          <DateComponent
-            fecha={formattedDeadineDate}
-            title="Fecha de envío"
-            onDateChange={handleDeadlineDateChange}
-            col="col-6"
-            name="idDeadline"
-          />
-          <div className="col-6 mt-4">
+          <div className="col-12 col-md-6">
             <label htmlFor="inputStage" className="form-label">
               Etapa
             </label>
             <select
-              className="form-select mb-3"
+              className="form-select"
               onChange={(e) => setData({ ...data, id_etapa: e.target.value })}
               value={data.id_etapa}
             >
@@ -141,13 +249,20 @@ function EditStages() {
               <option value="6">Terminación</option>
               <option value="7">Reparación</option>
             </select>
+            {stageErrorMessage && (
+              <div className="col-12">
+                <div style={styles.error}>
+                  <span>Seleccione una etapa válida</span>
+                </div>
+              </div>
+            )}
           </div>
-          <div className="col-6 mt-4">
+          <div className="col-12 col-md-6">
             <label htmlFor="inputStage" className="form-label">
               Estado
             </label>
             <select
-              className="form-select mb-3"
+              className="form-select"
               onChange={(e) => setData({ ...data, id_estado: e.target.value })}
               value={data.id_estado}
             >
@@ -156,33 +271,79 @@ function EditStages() {
               <option value="3">En proceso</option>
               <option value="4">Terminado</option>
             </select>
+            {stateErrorMessage && (
+              <div className="col-12">
+                <div style={styles.error}>
+                  <span>Seleccione un estado válido</span>
+                </div>
+              </div>
+            )}
           </div>
-          <div className="col-12 row-2">
+          <div className="col-12 col-md-6">
+            <DateComponent
+              fecha={formattedDeliveryDate}
+              title="Fecha de envío"
+              onDateChange={handleDeliveryDateChange}
+              col="col-12"
+              name="idDeliveryDate"
+            />
+            {shippingDateErrorMessage && (
+              <div className="col-12">
+                <div style={styles.error}>
+                  <span>Máximo un año de distancia</span>
+                </div>
+              </div>
+            )}
+          </div>
+          <div className="col-12 col-md-6">
+            <DateComponent
+              fecha={formattedDeadineDate}
+              title="Fecha de entrega"
+              onDateChange={handleDeadlineDateChange}
+              col="col-12"
+              name="idDeadline"
+            />
+            {deadlineErrorMessage && (
+              <div className="col-12">
+                <div style={styles.error}>
+                  <span>Debe ser entre 1 año pasado y 14 meses futuros</span>
+                </div>
+              </div>
+            )}
+          </div>
+          <div className="col-12" style={styles.containerInput}>
             <label htmlFor="inputDescription" className="form-label">
               Descripción
             </label>
-            <input
-              type="text"
-              className="form-control inputDescription h-100"
+            <textarea
+              className="form-control inputDescription h-75 custom-input"
               id="inputDescription"
               placeholder="Modifique descripción"
               autoComplete="off"
+              style={styles.customInput}
               onChange={(e) =>
                 setData({ ...data, descripcion: e.target.value })
               }
               value={data?.descripcion ? data?.descripcion : ""}
             />
+            {descriptionErrorMessage && (
+              <div className="col-12">
+                <div style={styles.error}>
+                  <span>{descriptionMessage}</span>
+                </div>
+              </div>
+            )}
           </div>
-          <div className="col-4 offset-3 mt-5">
-            <button type="submit" className="btn btn-success w-50">
+          <div className="col-12 col-sm-6 col-md-4 offset-md-2 col-lg-3 offset-lg-3">
+            <button type="submit" className="btn btn-success w-100">
               Editar etapa
             </button>
           </div>
-          <div className="col-4 mt-5">
+          <div className="col-12 col-sm-6 col-md-4 col-lg-3">
             <div>
               <Link
                 to={`/stages/${data.id_orden}`}
-                className="btn btn-danger w-50 btn-secondary"
+                className="btn btn-danger w-100 btn-secondary"
               >
                 Volver
               </Link>
@@ -195,3 +356,42 @@ function EditStages() {
 }
 
 export default EditStages;
+
+const styles = {
+  error: {
+    color: "red",
+    alignItems: "center",
+  },
+  errorMessage: {
+    height: 0,
+    overflow: "hidden",
+    transition: "height 0.3s",
+  },
+  errorMessageShow: {
+    height: "20px" /* Adjust the height as needed */,
+  },
+  // style for window error message (alert)
+  alert: {
+    position: "absolute",
+    top: "0",
+    left: "0",
+    width: "100%",
+    zIndex: "100",
+  },
+  alertMessage: {
+    width: "100%",
+    height: "100%",
+    display: "flex",
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  containerInput: {
+    height: "120px",
+  },
+  customInput: {
+    backgrondColor: "#fff",
+    overflow: "scroll",
+    resize: "vertical",
+    overflowX: "auto",
+  },
+};

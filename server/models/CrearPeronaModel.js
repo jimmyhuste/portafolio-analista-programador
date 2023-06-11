@@ -173,9 +173,9 @@ class Persona {
     });
   }
 
-  static delete(id, callback) {
+  static delete(rut, callback) {
     const existSql = 'SELECT * FROM usuarios WHERE rut = ?';
-    db.query(existSql, [id], (error, results) => {
+    db.query(existSql, [rut], (error, results) => {
       if (error) throw error;
       console.log(results); // Imprime los resultados de la consulta
       if (results.length === 0) {
@@ -189,9 +189,9 @@ class Persona {
       // Verificar si el usuario existe antes de eliminarlo
 
       // El usuario existe, proceder a eliminarlo
-      db.query(sqlUsuarios, [id], (error) => {
+      db.query(sqlUsuarios, [rut], (error) => {
         if (error) throw error;
-        db.query(sqlPersonas, [id], (error) => {
+        db.query(sqlPersonas, [rut], (error) => {
           if (error) throw error;
           callback(null, 'Usuario eliminado correctamente');
         });

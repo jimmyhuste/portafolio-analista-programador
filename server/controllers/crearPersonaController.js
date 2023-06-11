@@ -147,7 +147,7 @@ class CrearPersonaController {
 
   static delete(req, res) {
     const id = req.params.id;
-
+    console.log(id)
     Persona.delete(id, (error, message) => {
       if (error) {
         console.error('Error al eliminar el usuario:', error);

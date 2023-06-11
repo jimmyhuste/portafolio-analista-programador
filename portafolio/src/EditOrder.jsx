@@ -1,44 +1,78 @@
 import axios from "axios";
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
+import AlertComponent from "./components/AlertComponent";
+import ChileanRutify from "chilean-rutify";
 
 function EditOrder() {
   const { id } = useParams();
   const navigate = useNavigate();
   const [data, setData] = useState({
-    fecha_creacion: "",
-    numero_ficha: "",
-    patient_name: "",
-    patient_last_name: "",
-    rut_paciente: "",
-    patient_birth_date: "",
-    centro: "",
-    doctor_name: "",
-    doctor_last_name: "",
-    rut_doctor: "",
-    tipo_trabajo: "",
-    protesis: "",
-    completitud: "",
+    creationDate: "",
+    fileNumber: "",
+    patientName: "",
+    patientLastName: "",
+    patientRut: "",
+    patientBirthDate: "",
+    medicalCenter: "",
+    doctorName: "",
+    doctorLastName: "",
+    doctorRut: "",
+    workType: "",
+    prothesis: "",
+    completitude: "",
     color: "",
-    ubicacion: "",
-    indicaciones: "",
-    tipo_factura: "",
-    fecha_facturacion: "",
-    licencia: "",
+    location: "",
+    indications: "",
+    billing: "",
+    billingDate: "",
+    licence: "",
   });
   const [name, setName] = useState({ name: "" });
   const [emptyFieldsMessage, setEmptyFieldsMessage] = useState(false);
-  const [passErrorMessage, setPassErrorMessage] = useState(false);
   const [parsedCreationDate, setParsedCreationDate] = useState("");
   const [parsedPatientBirthdate, setParsedPatientBirthdate] = useState("");
   const [parsedBillingDate, setParsedBillingDate] = useState("");
+  const [creationDateErrorMessage, setCreationDateErrorMessage] =
+    useState(false);
+  const [fileNumberErrorMessage, setFileNumberErrorMessage] = useState(false);
+  const [patientNameErrorMessage, setPatientNameErrorMessage] = useState(false);
+  const [patientNameMessage, setPatientNameMessage] = useState("");
+  const [patientLastNameErrorMessage, setPatientLastNameErrorMessage] =
+    useState(false);
+  const [patientLastNameMessage, setPatientLastNameMessage] = useState(false);
+  const [patientRutErrorMessage, setPatientRutErrorMessage] = useState(false);
+  const [patientRutMessage, setPatientRutMessage] = useState(false);
+  const [patientBirthDateErrorMessage, setPatientBirthDateErrorMessage] =
+    useState(false);
+  const [medicalCenterErrorMessage, setMedicalCenterErrorMessage] =
+    useState(false);
+  const [doctorNameErrorMessage, setDoctorNameErrorMessage] = useState(false);
+  const [doctorNameMessage, setDoctorNameMessage] = useState("");
+  const [doctorLastNameErrorMessage, setDoctorLastNameErrorMessage] =
+    useState(false);
+  const [doctorLastNameMessage, setDoctorLastNameMessage] = useState("");
+  const [doctorRutErrorMessage, setDoctorRutErrorMessage] = useState(false);
+  const [doctorRutMessage, setDoctorRutMessage] = useState(false);
+  const [workTypeErrorMessage, setWorkTypeErrorMessage] = useState(false);
+  const [prothesisErrorMessage, setProthesisErrorMessage] = useState(false);
+  const [completitudeErrorMessage, setCompletitudeErrorMessage] =
+    useState(false);
+  const [colorErrorMessage, setColorErrorMessage] = useState(false);
+  const [locationErrorMessage, setLocationErrorMessage] = useState(false);
+  const [indicationsErrorMessage, setIndicationsErrorMessage] = useState(false);
+  const [indicationsMessage, setIndicationsMessage] = useState(false);
+  const [billingErrorMessage, setBillingErrorMessage] = useState(false);
+  const [billingDateErrorMessage, setBillingDateErrorMessage] = useState(false);
+  const [licenceErrorMessage, setLicenceErrorMessage] = useState(false);
 
-  const handleClose = () => {
-    setPassErrorMessage(false);
+  const handleCloseEmpty = () => {
+    setEmptyFieldsMessage(false);
   };
 
   useEffect(() => {
     axios.get("http://localhost:8081/getOrder/" + id).then((res) => {
+      console.log(res.data.Result);
       const creationDate = new Date(res.data.Result[0].fecha_creacion);
       creationDate.setDate(creationDate.getDate() - 1);
       const billinghDate = new Date(res.data.Result[0].fecha_facturacion);
@@ -47,25 +81,25 @@ function EditOrder() {
       patientBirthDate.setDate(patientBirthDate.getDate() - 1);
       setData({
         ...data,
-        fecha_creacion: creationDate,
-        numero_ficha: res.data.Result[0].numero_ficha,
-        patient_name: res.data.Result[0].patient_name,
-        patient_last_name: res.data.Result[0].patient_last_name,
-        rut_paciente: res.data.Result[0].rut_paciente,
-        patient_birth_date: patientBirthDate,
-        centro: res.data.Result[0].centro,
-        doctor_name: res.data.Result[0].doctor_name,
-        doctor_last_name: res.data.Result[0].doctor_last_name,
-        rut_doctor: res.data.Result[0].rut_doctor,
-        tipo_trabajo: res.data.Result[0].tipo_trabajo,
-        protesis: res.data.Result[0].protesis,
-        completitud: res.data.Result[0].completitud,
+        creationDate: creationDate,
+        fileNumber: res.data.Result[0].numero_ficha,
+        patientName: res.data.Result[0].patient_name,
+        patientLastName: res.data.Result[0].patient_last_name,
+        patientRut: res.data.Result[0].rut_paciente,
+        patientBirthDate: patientBirthDate,
+        medicalCenter: res.data.Result[0].centro,
+        doctorName: res.data.Result[0].doctor_name,
+        doctorLastName: res.data.Result[0].doctor_last_name,
+        doctorRut: res.data.Result[0].rut_doctor,
+        workType: res.data.Result[0].tipo_trabajo,
+        prothesis: res.data.Result[0].protesis,
+        completitude: res.data.Result[0].completitud,
         color: res.data.Result[0].color,
-        ubicacion: res.data.Result[0].ubicacion,
-        indicaciones: res.data.Result[0].indicaciones,
-        tipo_factura: res.data.Result[0].tipo_factura,
-        fecha_facturacion: billinghDate,
-        licencia: res.data.Result[0].licencia,
+        location: res.data.Result[0].ubicacion,
+        indications: res.data.Result[0].indicaciones,
+        billing: res.data.Result[0].tipo_factura,
+        billingDate: billinghDate,
+        licence: res.data.Result[0].licencia,
       });
       setName({
         name: res.data.Result[0].numero_ficha,
@@ -74,9 +108,9 @@ function EditOrder() {
   }, []);
 
   useEffect(() => {
-    const creationDate = new Date(data.fecha_creacion);
-    const billingDate = new Date(data.fecha_facturacion);
-    const patientDate = new Date(data.patient_birth_date);
+    const creationDate = new Date(data.creationDate);
+    const billingDate = new Date(data.billingDate);
+    const patientDate = new Date(data.patientBirthDate);
     creationDate.setDate(creationDate.getDate() + 1);
     billingDate.setDate(billingDate.getDate() + 1);
     patientDate.setDate(patientDate.getDate() + 1);
@@ -101,37 +135,324 @@ function EditOrder() {
     setParsedCreationDate(creationDateFormatted);
     setParsedPatientBirthdate(patientDateFormatted);
     setParsedBillingDate(billingDateFormatted);
-  }, [data.fecha_creacion, data.fecha_facturacion, data.patient_birth_date]);
+  }, [data.creationDate, data.billingDate, data.patientBirthDate]);
 
   const handleSubmit = (event) => {
     event.preventDefault();
-    // Check if any required fields are empty
-    // if (
-    //   data.name === "" ||
-    //   data.lastName === "" ||
-    //   data.rut === "" ||
-    //   data.email === "" ||
-    //   data.birthDate === "" ||
-    //   data.address === "" ||
-    //   data.password === "" ||
-    //   data.confirmPassword === "" ||
-    //   data.role === "" ||
-    //   data.phone === ""
-    // ) {
-    //   alert("Por favor, complete todos los campos obligatorios.");
-    //   setEmptyFieldsMessage(true);
-    //   return;
-    // }
-    setEmptyFieldsMessage(false);
-    setPassErrorMessage(false);
+    // Error handler
+    let hasError = false;
+    // Validate creationDate
+    const currentDate = new Date();
+    const selectedDate = new Date(data.creationDate);
+    const minDate = new Date("2017-01-01");
+    if (selectedDate < minDate || selectedDate > currentDate) {
+      setCreationDateErrorMessage(true);
+      hasError = true;
+    } else {
+      setCreationDateErrorMessage(false);
+    }
+    // Validate filenumber
+    const fileNumber = /^[0-9]*$/;
+    if (!fileNumber.test(data.fileNumber) || data.fileNumber.length > 15) {
+      setFileNumberErrorMessage(true);
+      hasError = true;
+    } else {
+      setFileNumberErrorMessage(false);
+    }
+    // Validate patientName
+    const spaceCount = (string) => string.split(" ").length - 1;
+    const nameRegex = /^[A-Za-z]*(?:\s[A-Za-z]*){0,2}$/;
+    if (!nameRegex.test(data.patientName) || data.patientName.length > 100) {
+      setPatientNameErrorMessage(true);
+      setPatientNameMessage("Sólo se permiten letras");
+      if (spaceCount(data.patientName) > 2) {
+        setPatientNameMessage("Máximo 2 espacios");
+      }
+      hasError = true;
+    } else {
+      setPatientNameErrorMessage(false);
+    }
+    // Validate patientLastName
     if (
-      typeof data.patient_birth_date === "object" ||
-      typeof data.fecha_creacion === "object" ||
-      typeof data.fecha_facturacion === "object"
+      !nameRegex.test(data.patientLastName) ||
+      data.patientLastName.length > 100
     ) {
-      const patientBirthDate = new Date(data.patient_birth_date);
-      const creationDate = new Date(data.fecha_creacion);
-      const billingDate = new Date(data.fecha_facturacion);
+      setPatientLastNameErrorMessage(true);
+      setPatientLastNameMessage("Sólo se permiten letras");
+      if (spaceCount(data.patientLastName) > 2) {
+        setPatientLastNameMessage("Máximo 2 espacios");
+      }
+      hasError = true;
+    } else {
+      setPatientLastNameErrorMessage(false);
+    }
+    // Validate patient rut
+    const validateRut = (rut) => {
+      const rutRegex = /^\d{1,8}-[\dk]$/;
+      return rutRegex.test(rut);
+    };
+    if (
+      !validateRut(data.patientRut) ||
+      !ChileanRutify.validRut(data.patientRut)
+    ) {
+      setPatientRutErrorMessage(true);
+      setPatientRutMessage("Rut invalido");
+      const hasDot = data.patientRut.includes(".");
+      const hasHyphen = data.patientRut.includes("-");
+      if (hasDot || !hasHyphen) {
+        setPatientRutMessage("Rut debe ser sin puntos y con guión");
+      }
+      if (data.patientRut === "") {
+        setPatientRutMessage("");
+      }
+      hasError = true;
+    } else {
+      setPatientRutErrorMessage(false);
+    }
+    // Validate patient birthdate
+    const selectedBirthDate = new Date(data.patientBirthDate);
+    const minBirthDate = new Date("1990-01-01");
+    if (selectedBirthDate < minBirthDate || selectedBirthDate > currentDate) {
+      setPatientBirthDateErrorMessage(true);
+      hasError = true;
+    } else {
+      setPatientBirthDateErrorMessage(false);
+    }
+    // Validate medical center
+    if (
+      data.medicalCenter !== 1 &&
+      data.medicalCenter !== 2 &&
+      data.medicalCenter !== 3 &&
+      data.medicalCenter !== "1" &&
+      data.medicalCenter !== "2" &&
+      data.medicalCenter !== "3"
+    ) {
+      setMedicalCenterErrorMessage(true);
+      hasError = true;
+    } else {
+      setMedicalCenterErrorMessage(false);
+    }
+    // Validate doctorName
+    if (!nameRegex.test(data.doctorName) || data.doctorName.length > 100) {
+      setDoctorNameErrorMessage(true);
+      setDoctorNameMessage("Sólo se permiten letras");
+      if (spaceCount(data.doctorName) > 1) {
+        setDoctorNameMessage("Máximo 1 espacio");
+      }
+      hasError = true;
+    } else {
+      setDoctorNameErrorMessage(false);
+    }
+    // Validate lastNameDoctor
+    if (!nameRegex.test(data.doctorLastName) || data.doctorLastName > 100) {
+      setDoctorLastNameErrorMessage(true);
+      setDoctorLastNameMessage("Sólo se permiten letras");
+      if (spaceCount(data.doctorLastName) > 0) {
+        setDoctorLastNameMessage("No se permiten espacios");
+      }
+      hasError = true;
+    } else {
+      setDoctorLastNameErrorMessage(false);
+    }
+    // Validate doctor rut
+    if (
+      !validateRut(data.doctorRut) ||
+      !ChileanRutify.validRut(data.doctorRut)
+    ) {
+      setDoctorRutErrorMessage(true);
+      setDoctorRutMessage("Rut invalido");
+      const hasDot = data.doctorRut.includes(".");
+      const hasHyphen = data.doctorRut.includes("-");
+      if (hasDot || !hasHyphen) {
+        setDoctorRutMessage("Rut debe ser sin puntos y con guión");
+      }
+      if (data.doctorRut === "") {
+        setDoctorRutMessage("");
+      }
+      hasError = true;
+    } else {
+      setPatientRutErrorMessage(false);
+    }
+    // Validate workType
+    if (
+      data.workType !== 1 &&
+      data.workType !== 2 &&
+      data.workType !== 3 &&
+      data.workType !== 4 &&
+      data.workType !== 5 &&
+      data.workType !== "1" &&
+      data.workType !== "2" &&
+      data.workType !== "3" &&
+      data.workType !== "4" &&
+      data.workType !== "5"
+    ) {
+      setWorkTypeErrorMessage(true);
+      hasError = true;
+    } else {
+      setWorkTypeErrorMessage(false);
+    }
+    // Validate prothesis
+    if (
+      data.prothesis !== 1 &&
+      data.prothesis !== 2 &&
+      data.prothesis !== 3 &&
+      data.prothesis !== "1" &&
+      data.prothesis !== "2" &&
+      data.prothesis !== "3"
+    ) {
+      setProthesisErrorMessage(true);
+      hasError = true;
+    } else {
+      setProthesisErrorMessage(false);
+    }
+    // Validate completitude
+    if (
+      data.completitude !== 1 &&
+      data.completitude !== 2 &&
+      data.completitude !== "1" &&
+      data.completitude !== "2"
+    ) {
+      setCompletitudeErrorMessage(true);
+      hasError = true;
+    } else {
+      setCompletitudeErrorMessage(false);
+    }
+    // Validate colors
+    const validColors = [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12,
+      13,
+      14,
+      15,
+      16,
+      "1",
+      "2",
+      "3",
+      "4",
+      "5",
+      "6",
+      "7",
+      "8",
+      "9",
+      "10",
+      "11",
+      "12",
+      "13",
+      "14",
+      "15",
+      "16",
+    ];
+
+    if (!validColors.includes(data.color)) {
+      setColorErrorMessage(true);
+      hasError = true;
+    } else {
+      setColorErrorMessage(false);
+    }
+    // Validate location
+    const validLocations = [1, 2, "1", "2"];
+
+    if (!validLocations.includes(data.location)) {
+      setLocationErrorMessage(true);
+      hasError = true;
+    } else {
+      setLocationErrorMessage(false);
+    }
+    // Validate indications
+    const indicationsRegex = /^[A-Za-z0-9\s]+$/;
+    if (data.indications.length > 255) {
+      setIndicationsErrorMessage(true);
+      setIndicationsMessage("Indicación muy larga");
+      if (!indicationsRegex.test(data.indications)) {
+        setIndicationsMessage("Sólo se permiten letras y números");
+      }
+      if (data.indications === "") {
+        setIndicationsMessage("");
+      }
+      hasError = true;
+    } else {
+      setIndicationsErrorMessage(false);
+    }
+    // Validate billings
+    const validBillings = [1, 2, "1", "2"];
+
+    if (!validBillings.includes(data.billing)) {
+      setBillingErrorMessage(true);
+      hasError = true;
+    } else {
+      setBillingErrorMessage(false);
+    }
+    // Validate billingDate
+    const selectedBillingDate = new Date(data.billingDate);
+    const minBillingDate = new Date("2017-01-01");
+    const maxDate = new Date();
+    const maxBillingDate = maxDate.setMonth(maxDate.getMonth() + 6);
+    if (
+      selectedBillingDate < minBillingDate ||
+      selectedBillingDate > maxBillingDate
+    ) {
+      setBillingDateErrorMessage(true);
+      hasError = true;
+    } else {
+      setBillingDateErrorMessage(false);
+    }
+    // Validate licence
+    const validLicences = [1, "1"];
+
+    if (!validLicences.includes(data.licence)) {
+      setLicenceErrorMessage(true);
+      hasError = true;
+    } else {
+      setLicenceErrorMessage(false);
+    }
+    // Check if any required fields are empty
+    if (
+      data.creationDate === "" ||
+      data.fileNumber === "" ||
+      data.patientName === "" ||
+      data.patientLastName === "" ||
+      data.patientRut === "" ||
+      data.patientBirthDate === "" ||
+      data.medicalCenter === "" ||
+      data.doctorName === "" ||
+      data.doctorLastName === "" ||
+      data.doctorRut === "" ||
+      data.workType === "" ||
+      data.prothesis === "" ||
+      data.completitude === "" ||
+      data.stage === "" ||
+      data.color === "" ||
+      data.location === "" ||
+      data.indications === "" ||
+      data.billing === "" ||
+      data.billingDate === "" ||
+      data.licence === ""
+    ) {
+      setEmptyFieldsMessage(true);
+      return;
+    }
+    setEmptyFieldsMessage(false);
+    if (hasError) {
+      return;
+    }
+    if (
+      typeof data.patientBirthDate === "object" ||
+      typeof data.creationDate === "object" ||
+      typeof data.billingDate === "object"
+    ) {
+      const patientBirthDate = new Date(data.patientBirthDate);
+      const creationDate = new Date(data.creationDate);
+      const billingDate = new Date(data.billingDate);
       patientBirthDate.setDate(patientBirthDate.getDate() + 1);
       creationDate.setDate(creationDate.getDate() + 1);
       billingDate.setDate(billingDate.getDate() + 1);
@@ -164,9 +485,9 @@ function EditOrder() {
       // Update the data object with the formatted birthDate
       const updatedData = {
         ...data,
-        patient_birth_date: formattedPatientBirthDate,
-        fecha_creacion: formattedCreationDay,
-        fecha_facturacion: formattedBillingDay,
+        patientBirthDate: formattedPatientBirthDate,
+        creationDate: formattedCreationDay,
+        billingDate: formattedBillingDay,
       };
       axios
         .put("http://localhost:8081/updateOrder/" + id, updatedData)
@@ -193,23 +514,14 @@ function EditOrder() {
       <h2>Edición de orden Nro°{name.name}</h2>
       <div className="col-12">
         {emptyFieldsMessage && (
-          <div
-            className="alert alert-danger alert-dismissible fade show"
-            role="alert"
-          >
-            <div className="d-flex justify-content-between">
-              <strong>
-                Por favor, complete todos los campos obligatorios.
-              </strong>
-              <button type="button" className="close" onClick={handleClose}>
-                <span aria-hidden="true">&times;</span>
-              </button>
-            </div>
-          </div>
+          <AlertComponent
+            emptyFieldsMessage={emptyFieldsMessage}
+            handleCloseEmpty={handleCloseEmpty}
+          />
         )}
       </div>
       <form className="row g-3 p-4" onSubmit={handleSubmit}>
-        <div className="col-6">
+        <div className="col-12 col-md-6">
           <label htmlFor="inputCreationDate" className="form-label">
             Fecha de creación
           </label>
@@ -218,13 +530,18 @@ function EditOrder() {
             className="form-control"
             id="inputCreationDate"
             autoComplete="off"
-            onChange={(e) =>
-              setData({ ...data, fecha_creacion: e.target.value })
-            }
+            onChange={(e) => setData({ ...data, creationDate: e.target.value })}
             value={parsedCreationDate}
           />
+          {creationDateErrorMessage && (
+            <div className="col-12">
+              <div style={styles.error}>
+                <span>Debe ser del 2017 hasta hoy</span>
+              </div>
+            </div>
+          )}
         </div>
-        <div className="col-6">
+        <div className="col-12 col-md-6">
           <label htmlFor="inputFileNumber" className="form-label">
             Número de ficha
           </label>
@@ -234,11 +551,18 @@ function EditOrder() {
             id="inputFileNumber"
             placeholder="Ingrese número de ficha"
             autoComplete="off"
-            onChange={(e) => setData({ ...data, numero_ficha: e.target.value })}
-            value={data.numero_ficha}
+            onChange={(e) => setData({ ...data, fileNumber: e.target.value })}
+            value={data.fileNumber}
           />
+          {fileNumberErrorMessage && (
+            <div className="col-12">
+              <div style={styles.error}>
+                <span>Sólo numeros</span>
+              </div>
+            </div>
+          )}
         </div>
-        <div className="col-6">
+        <div className="col-12 col-md-6">
           <label htmlFor="inputPatientName" className="form-label">
             Nombre del paciente
           </label>
@@ -248,11 +572,18 @@ function EditOrder() {
             id="inputPatientName"
             placeholder="Ingrese nombre"
             autoComplete="off"
-            onChange={(e) => setData({ ...data, patient_name: e.target.value })}
-            value={data.patient_name}
+            onChange={(e) => setData({ ...data, patientName: e.target.value })}
+            value={data.patientName}
           />
+          {patientNameErrorMessage && (
+            <div className="col-12">
+              <div style={styles.error} className={``}>
+                <span>{patientNameMessage}</span>
+              </div>
+            </div>
+          )}
         </div>
-        <div className="col-6">
+        <div className="col-12 col-md-6">
           <label htmlFor="inputPatientLastName" className="form-label">
             Apellido del paciente
           </label>
@@ -263,12 +594,19 @@ function EditOrder() {
             placeholder="Ingrese apellido"
             autoComplete="off"
             onChange={(e) =>
-              setData({ ...data, patient_last_name: e.target.value })
+              setData({ ...data, patientLastName: e.target.value })
             }
-            value={data.patient_last_name}
+            value={data.patientLastName}
           />
+          {patientLastNameErrorMessage && (
+            <div className="col-12">
+              <div style={styles.error} className={``}>
+                <span>{patientLastNameMessage}</span>
+              </div>
+            </div>
+          )}
         </div>
-        <div className="col-6">
+        <div className="col-12 col-md-6">
           <label htmlFor="inputPatientRut" className="form-label">
             Rut Paciente
           </label>
@@ -278,11 +616,18 @@ function EditOrder() {
             id="inputName"
             placeholder="Ingrese rut"
             autoComplete="off"
-            value={data.rut_paciente}
+            value={data.patientRut}
             disabled
           />
+          {patientRutErrorMessage && (
+            <div className="col-12">
+              <div style={styles.error}>
+                <span>{patientRutMessage}</span>
+              </div>
+            </div>
+          )}
         </div>
-        <div className="col-6">
+        <div className="col-12 col-md-6">
           <label htmlFor="inputBirthDatePatient" className="form-label">
             Fecha nacimiento Paciente
           </label>
@@ -293,12 +638,19 @@ function EditOrder() {
             placeholder="Ingresar fecha de nacimiento"
             autoComplete="off"
             onChange={(e) =>
-              setData({ ...data, patient_birth_date: e.target.value })
+              setData({ ...data, patientBirthDate: e.target.value })
             }
             value={parsedPatientBirthdate}
           />
+          {patientBirthDateErrorMessage && (
+            <div className="col-12">
+              <div style={styles.error}>
+                <span>Fecha inválida </span>
+              </div>
+            </div>
+          )}
         </div>
-        <div className="col-6">
+        <div className="col-12 col-md-6">
           <label htmlFor="inputNameDoctor" className="form-label">
             Nombre Doctor
           </label>
@@ -308,11 +660,18 @@ function EditOrder() {
             id="inputNameDoctor"
             placeholder="Ingrese Nombre"
             autoComplete="off"
-            onChange={(e) => setData({ ...data, doctor_name: e.target.value })}
-            value={data.doctor_name}
+            onChange={(e) => setData({ ...data, doctorName: e.target.value })}
+            value={data.doctorName}
           />
+          {doctorNameErrorMessage && (
+            <div className="col-12">
+              <div style={styles.error} className={``}>
+                <span>{doctorNameMessage}</span>
+              </div>
+            </div>
+          )}
         </div>
-        <div className="col-6">
+        <div className="col-12 col-md-6">
           <label htmlFor="inputLastNameDoctor" className="form-label">
             Apellido Doctor
           </label>
@@ -323,12 +682,19 @@ function EditOrder() {
             placeholder="Ingrese Apellido"
             autoComplete="off"
             onChange={(e) =>
-              setData({ ...data, doctor_last_name: e.target.value })
+              setData({ ...data, doctorLastName: e.target.value })
             }
-            value={data.doctor_last_name}
+            value={data.doctorLastName}
           />
+          {doctorLastNameErrorMessage && (
+            <div className="col-12">
+              <div style={styles.error} className={``}>
+                <span>{doctorLastNameMessage}</span>
+              </div>
+            </div>
+          )}
         </div>
-        <div className="col-6">
+        <div className="col-12 col-md-6">
           <label htmlFor="inputRutDoctor" className="form-label">
             Rut Doctor
           </label>
@@ -338,32 +704,48 @@ function EditOrder() {
             id="inputRutDoctor"
             placeholder="11111111-1"
             autoComplete="off"
-            value={data.rut_doctor}
+            value={data.doctorRut}
             disabled
           />
+          {doctorRutErrorMessage && (
+            <div className="col-12">
+              <div style={styles.error}>
+                <span>{doctorRutMessage}</span>
+              </div>
+            </div>
+          )}
         </div>
-        <div className="col-6">
+        <div className="col-12 col-md-6">
           <label htmlFor="inputMedicalCenter" className="form-label">
             Centro Médico
           </label>
           <select
             className="form-select mb-3"
-            onChange={(e) => setData({ ...data, centro: e.target.value })}
-            value={data.centro}
+            onChange={(e) =>
+              setData({ ...data, medicalCenter: e.target.value })
+            }
+            value={data.medicalCenter}
           >
             <option value="1">Hospital Barros Luco</option>
             <option value="2">Hospital Del Salvador</option>
             <option value="3">Hospital Metropolitano</option>
           </select>
+          {medicalCenterErrorMessage && (
+            <div className="col-12">
+              <div style={styles.error}>
+                <span>Seleccione un centro médico válido</span>
+              </div>
+            </div>
+          )}
         </div>
-        <div className="col-6">
+        <div className="col-12 col-md-6">
           <label htmlFor="inputWorkType" className="form-label">
             Tipo de trabajo
           </label>
           <select
             className="form-select mb-3"
-            onChange={(e) => setData({ ...data, tipo_trabajo: e.target.value })}
-            value={data.tipo_trabajo}
+            onChange={(e) => setData({ ...data, workType: e.target.value })}
+            value={data.workType}
           >
             <option value="1">Acrilica</option>
             <option value="2">Metálica</option>
@@ -371,35 +753,56 @@ function EditOrder() {
             <option value="4">Antagonista</option>
             <option value="5">Repetición</option>
           </select>
+          {workTypeErrorMessage && (
+            <div className="col-12">
+              <div style={styles.error}>
+                <span>Seleccione un trabajo válido</span>
+              </div>
+            </div>
+          )}
         </div>
-        <div className="col-6">
+        <div className="col-12 col-md-6">
           <label htmlFor="inputProthesis" className="form-label">
             Protesis
           </label>
           <select
             className="form-select mb-3"
-            onChange={(e) => setData({ ...data, protesis: e.target.value })}
-            value={data.protesis}
+            onChange={(e) => setData({ ...data, prothesis: e.target.value })}
+            value={data.prothesis}
           >
             <option value="1">Superior</option>
             <option value="2">Inferior</option>
             <option value="3">Ambas</option>
           </select>
+          {prothesisErrorMessage && (
+            <div className="col-12">
+              <div style={styles.error}>
+                <span>Seleccione una protesis válida</span>
+              </div>
+            </div>
+          )}
         </div>
-        <div className="col-6">
+        <div className="col-12 col-md-6">
           <label htmlFor="inputCompletitude" className="form-label">
             Completitud
           </label>
           <select
             className="form-select mb-3"
-            onChange={(e) => setData({ ...data, completitud: e.target.value })}
-            value={data.completitud}
+            onChange={(e) => setData({ ...data, completitude: e.target.value })}
+            value={data.completitude}
           >
             <option value="1">Total</option>
             <option value="2">Parcial</option>
           </select>
+          {completitudeErrorMessage && (
+            <div className="col-12">
+              <div style={styles.error}>
+                <span>Seleccione una completitud válida</span>
+              </div>
+            </div>
+          )}
         </div>
-        <div className="col-6">
+        <div className="col-12 col-md-6">
           <label htmlFor="inputColor" className="form-label">
             Color
           </label>
@@ -425,22 +828,36 @@ function EditOrder() {
             <option value="15">D3</option>
             <option value="16">D4</option>
           </select>
+          {colorErrorMessage && (
+            <div className="col-12">
+              <div style={styles.error}>
+                <span>Seleccione un color válido</span>
+              </div>
+            </div>
+          )}
         </div>
-        <div className="col-6">
+        <div className="col-12 col-md-6">
           <label htmlFor="inputLocation" className="form-label">
             Ubicacion
           </label>
-          <input
-            type="text"
-            className="form-control"
-            id="inputLocation"
-            placeholder="Ingresar ubicacion actual"
-            autoComplete="off"
-            onChange={(e) => setData({ ...data, ubicacion: e.target.value })}
-            value={data.ubicacion}
-          />
+          <select
+            className="form-select "
+            onChange={(e) => setData({ ...data, location: e.target.value })}
+            value={data.location}
+          >
+            <option value=""></option>
+            <option value="1">Laboratorio</option>
+            <option value="2">Hospital</option>
+          </select>
+          {locationErrorMessage && (
+            <div className="col-12">
+              <div style={styles.error}>
+                <span>Seleccione una ubicación válida</span>
+              </div>
+            </div>
+          )}
         </div>
-        <div className="col-6">
+        <div className="col-12 col-md-6">
           <label htmlFor="inputIndications" className="form-label">
             Indicaciones
           </label>
@@ -448,26 +865,40 @@ function EditOrder() {
             type="text"
             className="form-control"
             id="inputIndications"
-            placeholder="Ingresar indicaciones"
+            placeholder="Ingresar indications"
             autoComplete="off"
-            onChange={(e) => setData({ ...data, indicaciones: e.target.value })}
-            value={data.indicaciones}
+            onChange={(e) => setData({ ...data, indications: e.target.value })}
+            value={data.indications}
           />
+          {indicationsErrorMessage && (
+            <div className="col-12">
+              <div style={styles.error}>
+                <span>{indicationsMessage}</span>
+              </div>
+            </div>
+          )}
         </div>
-        <div className="col-6">
+        <div className="col-12 col-md-6">
           <label htmlFor="inputBill" className="form-label">
             Factura
           </label>
           <select
             className="form-select mb-3"
-            onChange={(e) => setData({ ...data, tipo_factura: e.target.value })}
-            value={data.tipo_factura}
+            onChange={(e) => setData({ ...data, billing: e.target.value })}
+            value={data.billing}
           >
             <option value="1">Exenta</option>
             <option value="2">Electronica Exenta</option>
           </select>
+          {billingErrorMessage && (
+            <div className="col-12">
+              <div style={styles.error}>
+                <span>Seleccione una factura válida</span>
+              </div>
+            </div>
+          )}
         </div>
-        <div className="col-6">
+        <div className="col-12 col-md-6">
           <label htmlFor="inputBillingDate" className="form-label">
             Fecha de facturación
           </label>
@@ -476,36 +907,50 @@ function EditOrder() {
             className="form-control"
             id="inputBillingDate"
             autoComplete="off"
-            onChange={(e) =>
-              setData({ ...data, fecha_facturacion: e.target.value })
-            }
+            onChange={(e) => setData({ ...data, billingDate: e.target.value })}
             value={parsedBillingDate}
           />
+          {billingDateErrorMessage && (
+            <div className="col-12">
+              <div style={styles.error}>
+                <span>Debe ser del 2017 hasta hasta los próximos 6 meses</span>
+              </div>
+            </div>
+          )}
         </div>
-        <div className="col-6">
+        <div className="col-12 col-md-6">
           <label htmlFor="inputLicence" className="form-label">
             Licencia
           </label>
           <select
             className="form-select mb-3"
-            onChange={(e) => setData({ ...data, licencia: e.target.value })}
-            value={data.licencia}
+            onChange={(e) => setData({ ...data, licence: e.target.value })}
+            value={data.licence}
           >
             <option value="1">2069-67-LP18</option>
           </select>
+          {licenceErrorMessage && (
+            <div className="col-12">
+              <div style={styles.error}>
+                <span>Seleccione una factura válida</span>
+              </div>
+            </div>
+          )}
         </div>
-        <div className="col-4 offset-3">
-          <button type="submit" className="btn btn-success w-50">
-            Editar orden
-          </button>
-        </div>
-        <div className="col-4">
-          <button
-            className="btn btn-danger w-50 btn-secondary"
-            onClick={() => navigate("/orders")}
-          >
-            Volver
-          </button>
+        <div className="col-12 row">
+          <div className="col-12 col-sm-6 col-md-4 offset-md-2 col-lg-3 offset-lg-3 mb-3">
+            <button type="submit" className="btn btn-success w-100">
+              Editar orden
+            </button>
+          </div>
+          <div className="col-12 col-sm-6 col-md-4 col-lg-3">
+            <button
+              className="btn btn-danger w-100 btn-secondary"
+              onClick={() => navigate("/orders")}
+            >
+              Volver
+            </button>
+          </div>
         </div>
       </form>
     </div>
@@ -513,3 +958,33 @@ function EditOrder() {
 }
 
 export default EditOrder;
+
+const styles = {
+  error: {
+    color: "red",
+    alignItems: "center",
+  },
+  errorMessage: {
+    height: 0,
+    overflow: "hidden",
+    transition: "height 0.3s",
+  },
+  errorMessageShow: {
+    height: "20px" /* Adjust the height as needed */,
+  },
+  // style for window error message (alert)
+  alert: {
+    position: "absolute",
+    top: "0",
+    left: "0",
+    width: "100%",
+    zIndex: "100",
+  },
+  alertMessage: {
+    width: "100%",
+    height: "100%",
+    display: "flex",
+    justifyContent: "center",
+    alignItems: "center",
+  },
+};

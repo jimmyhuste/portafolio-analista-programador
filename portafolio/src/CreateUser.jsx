@@ -1,11 +1,13 @@
 import axios from "axios";
-import React, { useState } from "react";
+import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import "./style.css";
 import ChileanRutify from "chilean-rutify";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import AlertComponent from "./components/AlertComponent";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faEye, faEyeSlash } from "@fortawesome/free-solid-svg-icons";
 
 function CreateUser() {
   const navigate = useNavigate();
@@ -26,13 +28,21 @@ function CreateUser() {
   const [emptyFieldsMessage, setEmptyFieldsMessage] = useState(false);
   const [passErrorMessage, setPassErrorMessage] = useState(false);
   const [nameErrorMessage, setNameErrorMessage] = useState(false);
+  const [nameMessage, setNameMessage] = useState(false);
   const [lastNameErrorMessage, setLastNameErrorMessage] = useState(false);
+  const [lastNameMessage, setLastNameMessage] = useState(false);
   const [birthDateErrorMessage, setBirthDateErrorErrorMessage] =
     useState(false);
+  const [birthDateMessage, setBirthDateMessage] = useState(false);
   const [emailErrorMessage, setEmailErrorMessage] = useState(false);
+  const [emailMessage, setEmailMessage] = useState(false);
   const [roleErrorMessage, setRoleErrorMessage] = useState(false);
   const [rutErrorMessage, setRutErrorMessage] = useState(false);
+  const [rutMessage, setRutMessage] = useState("");
   const [phoneErrorMessage, setPhoneErrorMessage] = useState(false);
+  const [phoneMessage, setPhoneMessage] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
+  const [passMessage, setPassMessage] = useState("");
 
   const notify = () =>
     toast.warn(
@@ -53,35 +63,50 @@ function CreateUser() {
     setEmptyFieldsMessage(false);
   };
 
+  const togglePasswordVisibility = () => {
+    setShowPassword(!showPassword);
+  };
+
   const handleSubmit = (event) => {
     event.preventDefault();
-    // Check if any required fields are empty
-    if (
-      data.name === "" ||
-      data.lastName === "" ||
-      data.rut === "" ||
-      data.email === "" ||
-      data.password === "" ||
-      data.confirmPassword === "" ||
-      data.role === ""
-    ) {
-      setEmptyFieldsMessage(true);
-      return;
-    }
-    setEmptyFieldsMessage(false);
     // Error handler
     let hasError = false;
     // Validate Name
-    const nameRegex = /^[A-Za-z]+$/;
-    if (!nameRegex.test(data.name) || data.name.length > 100) {
+    // Validate Name
+    const spaceCount = (string) => string.split(" ").length - 1;
+    const nameRegex = /^[A-Za-zÀ-ÿ]*(?:\s[A-Za-zÀ-ÿ]*){0,2}$/;
+    if (
+      !nameRegex.test(data.name) ||
+      data.name.length > 100 ||
+      data.name === ""
+    ) {
+      console.log("error message");
       setNameErrorMessage(true);
+      setNameMessage("Sólo se permiten letras");
+      if (spaceCount(data.name) > 1) {
+        setNameMessage("Máximo 1 espacio");
+      }
+      if (data.name === "") {
+        setNameMessage("Campo obligatorio");
+      }
       hasError = true;
     } else {
-      setNameErrorMessage(false);
+      setNameErrorMessage(false); // Reset the error state to false
     }
     // Validate lastName
-    if (!nameRegex.test(data.lastName) || data.lastName.length > 100) {
+    if (
+      !nameRegex.test(data.lastName) ||
+      data.lastName.length > 100 ||
+      data.lastName === ""
+    ) {
       setLastNameErrorMessage(true);
+      setLastNameMessage("Sólo se permiten letras");
+      if (spaceCount(data.lastName) > 0) {
+        setLastNameMessage("No se permiten espacios");
+      }
+      if (data.lastName === "") {
+        setLastNameMessage("Campo obligatorio");
+      }
       hasError = true;
     } else {
       setLastNameErrorMessage(false);
@@ -91,15 +116,33 @@ function CreateUser() {
       const rutRegex = /^\d{1,8}-[\dk]$/;
       return rutRegex.test(rut);
     };
-    if (!validateRut(data.rut) || !ChileanRutify.validRut(data.rut)) {
+    if (
+      !validateRut(data.rut) ||
+      !ChileanRutify.validRut(data.rut) ||
+      data.rut === ""
+    ) {
       setRutErrorMessage(true);
+      setRutMessage("Rut invalido");
+      const hasDot = data.rut.includes(".");
+      const hasHyphen = data.rut.includes("-");
+      if (hasDot || !hasHyphen) {
+        setRutMessage("Rut debe ser sin puntos y con guión");
+      }
+      if (data.rut === "") {
+        setRutMessage("Campo obligatorio");
+      }
       hasError = true;
     } else {
       setRutErrorMessage(false);
     }
     // Validate email
-    if (data.email.length > 100) {
+    if (data.email.length > 100 || data.email === "") {
       setEmailErrorMessage(true);
+      if (data.email === "") {
+        setEmailMessage("Campo obligatorio");
+      } else {
+        setEmailMessage("Máximo 100 caracteres");
+      }
       hasError = true;
     } else {
       setEmailErrorMessage(false);
@@ -110,19 +153,37 @@ function CreateUser() {
     const minDate = new Date("1900-01-01");
     if (selectedDate < minDate || selectedDate > currentDate) {
       setBirthDateErrorErrorMessage(true);
+
+      setBirthDateMessage("Fecha desde 1900 hasta hoy");
+
       hasError = true;
     } else {
       setBirthDateErrorErrorMessage(false);
     }
     // Validate passwords
-    if (data.password !== data.confirmPassword) {
+    if (data.password.length < 8 || data.password === "") {
       setPassErrorMessage(true);
+      if (data.password === "") {
+        setPassMessage("Campo obligatorio");
+      } else {
+        setPassMessage("Mínimo 8 caracteres");
+      }
+      hasError = true;
+    } else if (data.password !== data.confirmPassword) {
+      setPassErrorMessage(true);
+      setPassMessage("Contraseñas no coinciden");
       hasError = true;
     } else {
       setPassErrorMessage(false);
     }
+
     // Validate role
-    if (data.role !== "1" && data.role !== "2") {
+    if (
+      data.role !== 1 &&
+      data.role !== 2 &&
+      data.role !== "1" &&
+      data.role !== "2"
+    ) {
       setRoleErrorMessage(true);
       hasError = true;
     } else {
@@ -132,10 +193,27 @@ function CreateUser() {
     const phoneRegex = /^[0-9]*$/;
     if (!phoneRegex.test(data.phone) || data.phone.length > 15) {
       setPhoneErrorMessage(true);
+      if (data.phone.length > 15) {
+        setPhoneMessage("Máximo 15 dígitos");
+      } else {
+        setPhoneMessage("Sólo se permiten números");
+      }
       hasError = true;
     } else {
       setPhoneErrorMessage(false);
     }
+    // Check if any required fields are empty
+    if (
+      data.name === "" ||
+      data.lastName === "" ||
+      data.rut === "" ||
+      data.email === "" ||
+      data.role === ""
+    ) {
+      setEmptyFieldsMessage(true);
+      return;
+    }
+    setEmptyFieldsMessage(false);
     if (hasError) {
       return;
     }
@@ -168,7 +246,7 @@ function CreateUser() {
       .catch((err) => {
         if (err.response && err.response.status === 400) {
           console.log(err);
-          notify();
+          // notify();
         } else {
           console.log(err.response.data.error);
         }
@@ -184,7 +262,7 @@ function CreateUser() {
         />
       )}
       <form className="row g-3 p-4" onSubmit={handleSubmit}>
-        <div className="col-6">
+        <div className="col-12 col-md-6">
           <label htmlFor="inputName" className="form-label">
             Nombre *
           </label>
@@ -199,12 +277,12 @@ function CreateUser() {
           {nameErrorMessage && (
             <div className="col-12">
               <div style={styles.error} className={``}>
-                <span>Solo se permiten letras</span>
+                <span>{nameMessage}</span>
               </div>
             </div>
           )}
         </div>
-        <div className="col-6">
+        <div className="col-12 col-md-6">
           <label htmlFor="inputLastName" className="form-label">
             Apellido *
           </label>
@@ -218,13 +296,13 @@ function CreateUser() {
           />
           {lastNameErrorMessage && (
             <div className="col-12">
-              <div style={styles.error}>
-                <span>Solo se permiten letras</span>
+              <div style={styles.error} className={``}>
+                <span>{lastNameMessage}</span>
               </div>
             </div>
           )}
         </div>
-        <div className="col-6">
+        <div className="col-12 col-md-6">
           <label htmlFor="inputRut" className="form-label">
             Rut *
           </label>
@@ -239,7 +317,7 @@ function CreateUser() {
           {rutErrorMessage && (
             <div className="col-12">
               <div style={styles.error}>
-                <span>Rut invalido</span>
+                <span>{rutMessage}</span>
               </div>
             </div>
           )}
@@ -259,7 +337,7 @@ function CreateUser() {
           {emailErrorMessage && (
             <div className="col-12">
               <div style={styles.error}>
-                <span>Máximo 100 carácteres</span>
+                <span>{emailMessage}</span>
               </div>
             </div>
           )}
@@ -279,7 +357,7 @@ function CreateUser() {
           {birthDateErrorMessage && (
             <div className="col-12">
               <div style={styles.error}>
-                <span>Fecha inválida </span>
+                <span>{birthDateMessage}</span>
               </div>
             </div>
           )}
@@ -297,12 +375,12 @@ function CreateUser() {
             onChange={(e) => setData({ ...data, address: e.target.value })}
           />
         </div>
-        <div className="col-6">
+        <div className="col-12 col-md-6">
           <label htmlFor="inputPassword" className="form-label">
             Contraseña *
           </label>
           <input
-            type="password"
+            type={showPassword ? "text" : "password"}
             className="form-control"
             id="inputPassword"
             placeholder="Ingresar contraseña"
@@ -312,17 +390,26 @@ function CreateUser() {
           {passErrorMessage && (
             <div className="col-12">
               <div style={styles.error}>
-                <span>Contraseñas no coinciden</span>
+                <span>{passMessage}</span>
               </div>
             </div>
           )}
+          <button
+            type="button"
+            className="btn btn-outline-secondary mt-3 col-8 col-md-6 col-lg-4"
+            onClick={togglePasswordVisibility}
+            style={{ minWidth: "120px" }}
+          >
+            {showPassword ? "Esconder" : "Mostrar"}{" "}
+            <FontAwesomeIcon icon={showPassword ? faEyeSlash : faEye} />
+          </button>
         </div>
-        <div className="col-6">
+        <div className="col-12 col-md-6">
           <label htmlFor="inputConfirmPassword" className="form-label">
             Confirmar Contraseña *
           </label>
           <input
-            type="password"
+            type={showPassword ? "text" : "password"}
             className="form-control"
             id="inputConfirmPassword"
             placeholder="Re-ingresar contraseña"
@@ -332,7 +419,7 @@ function CreateUser() {
             }
           />
         </div>
-        <div className="col-6">
+        <div className="col-12 col-md-6">
           <label htmlFor="inputRole" className="form-label">
             Rol *
           </label>
@@ -344,15 +431,15 @@ function CreateUser() {
             <option value="1">Administrador</option>
             <option value="2">Laboratorista</option>
           </select>
-        </div>
-        {roleErrorMessage && (
-          <div className="col-6">
-            <div style={styles.error}>
-              <span>Debe seleccionar un rol</span>
+          {roleErrorMessage && (
+            <div className="col-12">
+              <div style={styles.error}>
+                <span>Seleccione un rol válido</span>
+              </div>
             </div>
-          </div>
-        )}
-        <div className="col-6">
+          )}
+        </div>
+        <div className="col-12 col-md-6">
           <label htmlFor="inputPhone" className="form-label">
             Número telefónico
           </label>
@@ -367,7 +454,7 @@ function CreateUser() {
           {phoneErrorMessage && (
             <div className="col-12">
               <div style={styles.error}>
-                <span>Sólo se permiten números</span>
+                <span>{phoneMessage}</span>
               </div>
             </div>
           )}
@@ -443,5 +530,28 @@ const styles = {
     display: "flex",
     justifyContent: "center",
     alignItems: "center",
+  },
+  togglePassword: {
+    position: "relative",
+    display: "inline-block",
+    width: "20px",
+    height: "20px",
+    backgroundColor: "#e4e4e4",
+    borderRadius: "4px",
+    cursor: "pointer",
+  },
+  togglePasswordIndicator: {
+    position: "absolute",
+    top: "50%",
+    left: "50%",
+    transform: "translate(-50%, -50%)",
+    width: "10px",
+    height: "10px",
+    backgroundColor: "#fff",
+    borderRadius: "50%",
+    transition: "transform 0.3s",
+  },
+  togglePasswordChecked: {
+    transform: "translate(-50%, -50%) scale(0)",
   },
 };

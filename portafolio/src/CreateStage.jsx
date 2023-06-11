@@ -16,6 +16,13 @@ function CreateStage() {
     descripcion: "",
   });
   const [emptyFieldsMessage, setEmptyFieldsMessage] = useState(false);
+  const [stageErrorMessage, setStageErrorMessage] = useState(false);
+  const [stateErrorMessage, setStateErrorMessage] = useState(false);
+  const [shippingDateErrorMessage, setShippingDateErrorMessage] =
+    useState(false);
+  const [deadlineErrorMessage, setDeadlineErrorMessage] = useState(false);
+  const [descriptionErrorMessage, setDescriptionErrorMessage] = useState(false);
+  const [descriptionMessage, setDescriptionMessage] = useState(false);
   const [errorMessage, setErrorMessage] = useState(false);
   const handleClose = () => {
     setErrorMessage(false);
@@ -25,19 +32,107 @@ function CreateStage() {
   }, []);
   const handleSubmit = (event) => {
     event.preventDefault();
+    // Error handler
+    let hasError = false;
     // Check if any required fields are empty
     // if (
     //   data.id_etapa === "" ||
     //   data.id_estado === "" ||
     //   data.fecha_envio === "" ||
-    //   data.fecha_entrega === "" ||
-    //   data.descripcion === ""
+    //   data.fecha_entrega === ""
     // ) {
     //   alert("Por favor, complete todos los campos obligatorios.");
     //   setEmptyFieldsMessage(true);
     //   return;
     // }
     setEmptyFieldsMessage(false);
+    // Validate stage
+    const validStages = [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      "1",
+      "2",
+      "3",
+      "4",
+      "5",
+      "6",
+      "7",
+    ];
+
+    if (!validStages.includes(data.id_etapa)) {
+      setStageErrorMessage(true);
+      hasError = true;
+    } else {
+      setStageErrorMessage(false);
+    }
+    setEmptyFieldsMessage(false);
+    // Validate state
+    const validStates = [1, 2, 3, 4, "1", "2", "3", "4"];
+
+    if (!validStates.includes(data.id_estado)) {
+      setStateErrorMessage(true);
+      hasError = true;
+    } else {
+      setStateErrorMessage(false);
+    }
+    // Validate shippingDate
+    const currentDateForMaxShipping = new Date();
+    const selectedShippingDate = new Date(data.fecha_envio);
+    const maxShippingDate = currentDateForMaxShipping.setMonth(
+      currentDateForMaxShipping.getMonth() + 12
+    );
+    const currentDateForMinShipping = new Date();
+    const minShippingDate = currentDateForMinShipping.setMonth(
+      currentDateForMinShipping.getMonth() - 12
+    );
+    if (
+      selectedShippingDate < minShippingDate ||
+      selectedShippingDate > maxShippingDate
+    ) {
+      setShippingDateErrorMessage(true);
+      hasError = true;
+      console.log(minShippingDate, maxShippingDate, selectedShippingDate);
+    } else {
+      setShippingDateErrorMessage(false);
+    }
+    // Validate deadline
+    const currentDateForMaxDeadline = new Date();
+    const selectedDeadlineDate = new Date(data.fecha_entrega);
+    const maxDeadlineDate = currentDateForMaxDeadline.setMonth(
+      currentDateForMaxDeadline.getMonth() + 14
+    );
+    const currentDateForMinDeadline = new Date();
+    const minDeadlineDate = currentDateForMinDeadline.setMonth(
+      currentDateForMinDeadline.getMonth() - 12
+    );
+    if (
+      selectedDeadlineDate < minDeadlineDate ||
+      selectedDeadlineDate > maxDeadlineDate
+    ) {
+      setDeadlineErrorMessage(true);
+      hasError = true;
+    } else {
+      setDeadlineErrorMessage(false);
+    }
+    // Validate description
+    if (data.descripcion.length > 255) {
+      setDescriptionErrorMessage(true);
+      setDescriptionMessage("Indicación muy larga");
+      if (data.descripcion === "") {
+        setDescriptionMessage("");
+      }
+      hasError = true;
+    } else {
+      setDescriptionErrorMessage(false);
+    }
+    if (hasError) {
+      return;
+    }
     axios
       .post(
         "http://localhost:8081/createStage/" + { id } + "/" + { number },
@@ -50,7 +145,7 @@ function CreateStage() {
   };
 
   return (
-    <div className="d-flex flex-column mx-auto align-items-center pt-2 mt-3 border  w-75">
+    <div className="d-flex flex-column mx-auto align-items-center pt-2 mt-3 border w-75">
       <h2>Cambio de etapa de orden Nro° {number}</h2>
       <div className="col-12">
         {emptyFieldsMessage && (
@@ -70,7 +165,7 @@ function CreateStage() {
         )}
       </div>
       <form className="row g-3 p-4" onSubmit={handleSubmit}>
-        <div className="col-6">
+        <div className="col-12 col-md-6">
           <label htmlFor="inputStage" className="form-label">
             Etapa
           </label>
@@ -87,8 +182,15 @@ function CreateStage() {
             <option value="6">Terminación</option>
             <option value="7">Reparación</option>
           </select>
+          {stageErrorMessage && (
+            <div className="col-12">
+              <div style={styles.error}>
+                <span>Seleccione una etapa válida</span>
+              </div>
+            </div>
+          )}
         </div>
-        <div className="col-6">
+        <div className="col-12 col-md-6">
           <label htmlFor="inputStage" className="form-label">
             Estado
           </label>
@@ -102,8 +204,15 @@ function CreateStage() {
             <option value="3">En proceso</option>
             <option value="4">Terminado</option>
           </select>
+          {stateErrorMessage && (
+            <div className="col-12">
+              <div style={styles.error}>
+                <span>Seleccione un estado válido</span>
+              </div>
+            </div>
+          )}
         </div>
-        <div className="col-6 mt-2">
+        <div className="col-12 col-md-6 mt-2">
           <label htmlFor="inputBirthDate" className="form-label">
             Fecha de envio
           </label>
@@ -115,8 +224,15 @@ function CreateStage() {
             autoComplete="off"
             onChange={(e) => setData({ ...data, fecha_envio: e.target.value })}
           />
+          {shippingDateErrorMessage && (
+            <div className="col-12">
+              <div style={styles.error}>
+                <span>Debe ser entre hoy hasta el próximo año</span>
+              </div>
+            </div>
+          )}
         </div>
-        <div className="col-6 mt-2">
+        <div className="col-12 col-md-6 mt-2">
           <label htmlFor="inputBirthDate" className="form-label">
             Fecha de entrega
           </label>
@@ -130,30 +246,44 @@ function CreateStage() {
               setData({ ...data, fecha_entrega: e.target.value })
             }
           />
+          {deadlineErrorMessage && (
+            <div className="col-12">
+              <div style={styles.error}>
+                <span>Debe ser entre hoy hasta los próximos 14 meses</span>
+              </div>
+            </div>
+          )}
         </div>
-        <div className="col-12 mt-4">
+        <div className="col-12" style={styles.containerInput}>
           <label htmlFor="inputDescription" className="form-label">
             Descripcion
           </label>
-          <input
-            type="text"
-            className="form-control inputDescription h-100"
+          <textarea
+            className="form-control inputDescription h-75"
             id="inputDescription"
             placeholder="Ingrese descripción"
             autoComplete="off"
+            style={styles.customInput}
             onChange={(e) => setData({ ...data, descripcion: e.target.value })}
           />
+          {descriptionErrorMessage && (
+            <div className="col-12">
+              <div style={styles.error}>
+                <span>{descriptionMessage}</span>
+              </div>
+            </div>
+          )}
         </div>
-        <div className="col-4 offset-3 mt-5">
-          <button type="submit" className="btn btn-success w-50">
+        <div className="col-12 col-sm-6 col-md-4 offset-md-2 col-lg-3 offset-lg-3">
+          <button type="submit" className="btn btn-success w-100">
             Cambiar etapa
           </button>
         </div>
-        <div className="col-4 mt-5">
+        <div className="col-12 col-sm-6 col-md-4 col-lg-3">
           <div>
             <Link
               to={`/stages/${id}`}
-              className="btn btn-danger w-50 btn-secondary"
+              className="btn btn-danger w-100 btn-secondary"
             >
               Volver
             </Link>
@@ -165,3 +295,42 @@ function CreateStage() {
 }
 
 export default CreateStage;
+
+const styles = {
+  error: {
+    color: "red",
+    alignItems: "center",
+  },
+  errorMessage: {
+    height: 0,
+    overflow: "hidden",
+    transition: "height 0.3s",
+  },
+  errorMessageShow: {
+    height: "20px" /* Adjust the height as needed */,
+  },
+  // style for window error message (alert)
+  alert: {
+    position: "absolute",
+    top: "0",
+    left: "0",
+    width: "100%",
+    zIndex: "100",
+  },
+  alertMessage: {
+    width: "100%",
+    height: "100%",
+    display: "flex",
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  containerInput: {
+    height: "120px",
+  },
+  customInput: {
+    backgrondColor: "#fff",
+    overflow: "scroll",
+    resize: "vertical",
+    overflowX: "auto",
+  },
+};

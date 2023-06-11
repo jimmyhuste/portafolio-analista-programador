@@ -1,5 +1,5 @@
 import axios from "axios";
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import ChileanRutify from "chilean-rutify";
 import { ToastContainer, toast } from "react-toastify";
@@ -24,11 +24,14 @@ function EditUser() {
     phone: "",
   });
   const [name, setName] = useState({ name: "", lastName: "" });
+  const [nameMessage, setNameMessage] = useState("");
   const [emptyFieldsMessage, setEmptyFieldsMessage] = useState(false);
+  const [rutMessage, setRutMessage] = useState("");
   const [passErrorMessage, setPassErrorMessage] = useState(false);
   const [parsedDate, setParsedDate] = useState("");
   const [nameErrorMessage, setNameErrorMessage] = useState(false);
   const [lastNameErrorMessage, setLastNameErrorMessage] = useState(false);
+  const [lastNameMessage, setLastNameMessage] = useState("");
   const [birthDateErrorMessage, setBirthDateErrorErrorMessage] =
     useState(false);
   const [emailErrorMessage, setEmailErrorMessage] = useState(false);
@@ -102,9 +105,9 @@ function EditUser() {
     setParsedDate(MyDateStringFormatted);
   }, [data.birthDate]);
 
-  // useEffect(() => {
-  //   console.log(data);
-  // }, [data]);
+  useEffect(() => {
+    console.log(data);
+  }, [data]);
 
   const handleSubmit = (event) => {
     event.preventDefault();
@@ -127,7 +130,10 @@ function EditUser() {
     const nameRegex = /^[A-Za-z]*(?:\s[A-Za-z]*){0,2}$/;
     if (!nameRegex.test(data.name) || data.name.length > 100) {
       setNameErrorMessage(true);
-      console.log("error name");
+      setNameMessage("Sólo se permiten letras");
+      if (spaceCount(data.name) > 1) {
+        setNameMessage("Máximo 1 espacio");
+      }
       hasError = true;
     } else {
       console.log("fixed error name");
@@ -136,7 +142,10 @@ function EditUser() {
     // Validate lastName
     if (!nameRegex.test(data.lastName) || data.lastName.length > 100) {
       setLastNameErrorMessage(true);
-
+      setLastNameMessage("Sólo se permiten letras");
+      if (spaceCount(data.lastName) > 0) {
+        setLastNameMessage("No se permiten espacios");
+      }
       hasError = true;
     } else {
       setLastNameErrorMessage(false);
@@ -148,6 +157,15 @@ function EditUser() {
     };
     if (!validateRut(data.rut) || !ChileanRutify.validRut(data.rut)) {
       setRutErrorMessage(true);
+      setRutMessage("Rut invalido");
+      const hasDot = data.rut.includes(".");
+      const hasHyphen = data.rut.includes("-");
+      if (hasDot || !hasHyphen) {
+        setRutMessage("Rut debe ser sin puntos y con guión");
+      }
+      if (data.rut === "") {
+        setRutMessage("");
+      }
       hasError = true;
     } else {
       setRutErrorMessage(false);
@@ -261,7 +279,7 @@ function EditUser() {
       </div>
       {dataLoaded && (
         <form className="row g-3 p-4" onSubmit={handleSubmit}>
-          <div className="col-6">
+          <div className="col-12 col-md-6">
             <label htmlFor="inputName" className="form-label">
               Nombre *
             </label>
@@ -274,22 +292,15 @@ function EditUser() {
               onChange={(e) => setData({ ...data, name: e.target.value })}
               value={data.name}
             />
-            {nameErrorMessage &&
-              (spaceCount(data.name) > 2 ? (
-                <div className="col-12">
-                  <div style={styles.error} className={``}>
-                    <span>Máximo 2 espacios</span>
-                  </div>
+            {nameErrorMessage && (
+              <div className="col-12">
+                <div style={styles.error} className={``}>
+                  <span>{nameMessage}</span>
                 </div>
-              ) : (
-                <div className="col-12">
-                  <div style={styles.error} className={``}>
-                    <span>Solo se permiten letras</span>
-                  </div>
-                </div>
-              ))}
+              </div>
+            )}
           </div>
-          <div className="col-6">
+          <div className="col-12 col-md-6">
             <label htmlFor="inputLastName" className="form-label">
               Apellido *
             </label>
@@ -304,13 +315,13 @@ function EditUser() {
             />
             {lastNameErrorMessage && (
               <div className="col-12">
-                <div style={styles.error}>
-                  <span>Solo se permiten letras</span>
+                <div style={styles.error} className={``}>
+                  <span>{lastNameMessage}</span>
                 </div>
               </div>
             )}
           </div>
-          <div className="col-6">
+          <div className="col-12 col-md-6">
             <label htmlFor="inputRut" className="form-label">
               Rut *
             </label>
@@ -326,7 +337,7 @@ function EditUser() {
             {rutErrorMessage && (
               <div className="col-12">
                 <div style={styles.error}>
-                  <span>Rut invalido</span>
+                  <span>{rutMessage}</span>
                 </div>
               </div>
             )}
