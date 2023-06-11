@@ -25,7 +25,11 @@ function Login() {
           setError(res.data.Error);
         }
       })
-      .catch((err) => console.log(err));
+      .catch((err) => {
+        if (err.response.data.message) {
+          setError(err.response.data.message);
+        } else console.log(err);
+      });
   };
 
   return (

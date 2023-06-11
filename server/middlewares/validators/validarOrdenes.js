@@ -1,5 +1,6 @@
 const { check, validationResult } = require("express-validator");
 
+const nameRegex = /^[A-Za-z]*(?:\s[A-Za-z]*){0,2}$/;
 const validarOrdenes = () => {
     return [
         check('patientName', 'Nombre de paciente es inválido')
@@ -7,7 +8,7 @@ const validarOrdenes = () => {
             .notEmpty()
             .isLength({ min: 3, max: 25 })
             .withMessage('El nombre de paciente debe tener entre 3 y 25 caracteres')
-            .custom((value) => !/^[A-Za-zÀ-ÿ]*(?:\s[A-Za-zÀ-ÿ]*){0,2}$/.test(value))
+            .custom((value) => nameRegex.test(value))
             .withMessage('El nombre de paciente no puede contener caracteres numéricos')
             .escape(),
 
@@ -16,7 +17,7 @@ const validarOrdenes = () => {
             .notEmpty()
             .isLength({ min: 3, max: 25 })
             .withMessage('El apellido de paciente debe tener entre 3 y 25 caracteres')
-            .custom((value) => !/^[A-Za-zÀ-ÿ]*(?:\s[A-Za-zÀ-ÿ]*){0,2}$/.test(value))
+            .custom((value) => nameRegex.test(value))
             .withMessage('El apellido de paciente no puede contener caracteres numéricos')
             .escape(),
         check('patientRut', 'Rut de paciente es inválido, debe tener el siguiente formato: [ 11111111-1')
@@ -29,7 +30,7 @@ const validarOrdenes = () => {
             .notEmpty()
             .isLength({ min: 3, max: 25 })
             .withMessage('El nombre de doctor debe tener entre 3 y 25 caracteres')
-            .custom((value) => !/^[A-Za-zÀ-ÿ]*(?:\s[A-Za-zÀ-ÿ]*){0,2}$/.test(value))
+            .custom((value) => nameRegex.test(value))
             .withMessage('El nombre de doctor no puede contener caracteres numéricos')
             .escape(),
 
@@ -38,7 +39,7 @@ const validarOrdenes = () => {
             .notEmpty()
             .isLength({ min: 3, max: 25 })
             .withMessage('El apellido de doctor debe tener entre 3 y 25 caracteres')
-            .custom((value) => !/^[A-Za-zÀ-ÿ]*(?:\s[A-Za-zÀ-ÿ]*){0,2}$/.test(value))
+            .custom((value) => nameRegex.test(value))
             .withMessage('El apellido de doctor no puede contener caracteres numéricos')
             .escape(),
         check('doctorRut', 'Rut de doctor es inválido, debe tener el siguiente formato: [ 11111111-1')
@@ -114,8 +115,7 @@ const validarOrdenes = () => {
             .isDate()
             .withMessage('La fecha de facturación debe tener el siguiente formato: YYYY-MM-DD'),
 
-        check('license', 'Licencia es inválida')
-            .notEmpty()
+        check('licence', 'Licencia es inválida')
             .notEmpty()
             .isInt()
             .withMessage('La licencia debe ser un número entero'),

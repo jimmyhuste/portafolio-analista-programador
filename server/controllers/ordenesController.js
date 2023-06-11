@@ -132,7 +132,6 @@ class OrdenesController {
         const { patientRut } = req.body;
         if (validarRut(patientRut)) {
             OrdenesModel.update(orderId, data, (error, orderId) => {
-                console.log("hola")
                 if (error) {
                     res.status(400).json({
                         estado: 'Error',

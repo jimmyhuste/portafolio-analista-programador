@@ -7,5 +7,6 @@ const validarPassword = require("../middlewares/validators/validatePassword")
 router.post('/login',
     validarPassword(),
     LoginController.login);
+router.get('/logout', LoginController.logout);
 
 module.exports = router;

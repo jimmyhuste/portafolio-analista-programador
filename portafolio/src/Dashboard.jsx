@@ -4,6 +4,7 @@ import { Link, Outlet, useNavigate } from "react-router-dom";
 import axios from "axios";
 
 function Dashboard() {
+  const token = localStorage.getItem("token");
   const navigate = useNavigate();
   axios.defaults.withCredentials = true;
   useEffect(() => {
@@ -27,7 +28,11 @@ function Dashboard() {
 
   const handleLogout = () => {
     axios
-      .get("http://localhost:8081/logout")
+      .get("http://localhost:8081/api/logout", {
+        headers: {
+          Authorization: `Bearer ${token}`, // Include the token in the Authorization header
+        },
+      })
       .then((res) => {
         if (res.data.Status === "Success") {
           navigate("/login");

@@ -79,7 +79,6 @@ function EditOrder() {
         },
       })
       .then((res) => {
-        console.log(res.data);
         const creationDate = new Date(res.data.fecha_creacion);
         creationDate.setDate(creationDate.getDate() - 1);
         const billinghDate = new Date(res.data.fecha_facturacion);

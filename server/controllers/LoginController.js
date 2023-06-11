@@ -52,6 +52,16 @@ class LoginController {
       });
     });
   }
+
+  static logout(req, res, next) {
+    res.clearCookie('token', {
+      httpOnly: true,
+      sameSite: "None",
+      secure: true
+    });
+    res.json({ Status: "Success", message: "Logout exitoso" });
+  }
+
 }
 
 module.exports = LoginController;
