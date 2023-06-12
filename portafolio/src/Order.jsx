@@ -177,7 +177,6 @@ function Order() {
       })
       .then((res) => {
         if (res.data.Status === "Success") {
-          window.location.reload(true);
           let timerInterval;
           swalDeleted.fire({
             title: "Orden eliminada",

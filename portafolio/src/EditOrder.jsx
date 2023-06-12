@@ -4,6 +4,7 @@ import { useNavigate, useParams } from "react-router-dom";
 import AlertComponent from "./components/AlertComponent";
 import ChileanRutify from "chilean-rutify";
 import { DotSpinner } from "@uiball/loaders";
+import Swal from "sweetalert2";
 
 function EditOrder() {
   const { id } = useParams();
@@ -30,6 +31,7 @@ function EditOrder() {
     billing: "",
     billingDate: "",
     licence: "",
+    stage: "",
   });
   const [name, setName] = useState({ name: "" });
   const [emptyFieldsMessage, setEmptyFieldsMessage] = useState(false);
@@ -73,6 +75,14 @@ function EditOrder() {
     setEmptyFieldsMessage(false);
   };
 
+  const swalEdited = Swal.mixin({
+    customClass: {
+      confirmButton: "close-button",
+      title: "title",
+    },
+    buttonsStyling: false,
+  });
+
   useEffect(() => {
     axios
       .get("http://localhost:8081/api/ordenes/" + id, {
@@ -108,6 +118,7 @@ function EditOrder() {
           billing: res.data.tipo_factura,
           billingDate: billinghDate,
           licence: res.data.licencia,
+          stage: res.data.etapa,
         });
         setDataLoaded(true);
         setName({
@@ -506,7 +517,17 @@ function EditOrder() {
         .then((res) => {
           console.log(res);
           if (res.data.Status === "Success") {
-            navigate("/orders");
+            let timerInterval;
+            swalEdited.fire({
+              title: "Usuario modificado",
+              timer: 3000,
+              timerProgressBar: true,
+              confirmButtonText: "Cerrar",
+              willClose: () => {
+                clearInterval(timerInterval);
+                navigate("/orders");
+              },
+            });
           }
         })
         .catch((err) => console.log(err));
@@ -520,7 +541,17 @@ function EditOrder() {
         .then((res) => {
           console.log(res);
           if (res.data.Status === "Success") {
-            navigate("/orders");
+            let timerInterval;
+            swalEdited.fire({
+              title: "Usuario modificado",
+              timer: 3000,
+              timerProgressBar: true,
+              confirmButtonText: "Cerrar",
+              willClose: () => {
+                clearInterval(timerInterval);
+                navigate("/orders");
+              },
+            });
           }
         })
         .catch((err) => console.log(err));

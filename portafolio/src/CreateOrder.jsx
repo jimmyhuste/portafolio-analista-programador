@@ -4,6 +4,7 @@ import { useNavigate } from "react-router-dom";
 import "./style.css";
 import AlertComponent from "./components/AlertComponent";
 import ChileanRutify from "chilean-rutify";
+import Swal from "sweetalert2";
 
 function CreateOrder() {
   const navigate = useNavigate();
@@ -68,6 +69,14 @@ function CreateOrder() {
   const handleCloseEmpty = () => {
     setEmptyFieldsMessage(false);
   };
+
+  const swalCreated = Swal.mixin({
+    customClass: {
+      confirmButton: "close-button",
+      title: "title",
+    },
+    buttonsStyling: false,
+  });
 
   useEffect(() => {
     console.log(data);
@@ -406,7 +415,17 @@ function CreateOrder() {
         },
       })
       .then(() => {
-        navigate("/orders");
+        let timerInterval;
+        swalCreated.fire({
+          title: "Orden creada",
+          timer: 3000,
+          timerProgressBar: true,
+          confirmButtonText: "Cerrar",
+          willClose: () => {
+            clearInterval(timerInterval);
+            navigate("/orders");
+          },
+        });
       });
   };
   return (

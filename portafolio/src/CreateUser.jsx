@@ -266,13 +266,6 @@ function CreateUser() {
               navigate("/users");
             },
           });
-        } else {
-          Swal.fire({
-            title: "Error",
-            text: res.data.Message,
-            icon: "error",
-            confirmButtonText: "Cerrar",
-          });
         }
       })
       .catch((err) => {
