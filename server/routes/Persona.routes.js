@@ -14,14 +14,24 @@ router.use((err, req, res, next) => {
         // Multer error occurred (e.g., file size exceeds limit)
         res.status(400).json({ error: 'Multer Error: ' + err.message });
     } else if (err) {
-        console.log("asdasdd")
         // Other error occurred (e.g., file type not allowed)
         res.status(400).json({ error: err.message });
     } else {
         next(); // If no error, pass control to the next middleware
     }
 });
-router.put('/persona/:id', validarPersona(), verifyRoute([1]), personaController.update);
+router.put('/persona/:id', uploadMiddleware.single('image'), validarPersona(), verifyRoute([1]), personaController.update);
+router.use((err, req, res, next) => {
+    if (err instanceof multer.MulterError) {
+        // Multer error occurred (e.g., file size exceeds limit)
+        res.status(400).json({ error: 'Multer Error: ' + err.message });
+    } else if (err) {
+        // Other error occurred (e.g., file type not allowed)
+        res.status(400).json({ error: err.message });
+    } else {
+        next(); // If no error, pass control to the next middleware
+    }
+});
 router.delete('/persona/:id', verifyRoute([1]), personaController.delete);
 
 module.exports = router;

@@ -6,6 +6,7 @@ const validarPersona = () => {
     check('email', 'Email es inválido')
       .isEmail()
       .normalizeEmail()
+      .notEmpty()
       .isLength({ max: 50 })
       .trim()
       .escape(),
@@ -26,6 +27,7 @@ const validarPersona = () => {
       .withMessage('El apellido no puede contener caracteres numéricos')
       .escape(),
     check('address', 'Dirección es inválida')
+      .optional({ checkFalsy: true })
       .isLength({ max: 100 })
       .withMessage('La dirección debe tener entre 5 y 100 caracteres')
       .trim()
@@ -36,9 +38,14 @@ const validarPersona = () => {
       .optional({ checkFalsy: true })
       .isLength({ max: 12 }),
     check('role', 'Rol es inválido')
-      .optional({ checkFalsy: true })
+      .notEmpty()
       .isInt()
       .withMessage('El rol debe ser un número entero'),
+
+    check('birthDate', 'Fecha de nacimiento es inválida')
+      .notEmpty()
+      .isDate()
+      .withMessage('La fecha de nacimiento debe tener el siguiente formato: YYYY-MM-DD'),
     (req, res, next) => {
       const errors = validationResult(req);
       if (!errors.isEmpty()) {

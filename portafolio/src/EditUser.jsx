@@ -82,7 +82,6 @@ function EditUser() {
       .then((res) => {
         const retrievedDate = new Date(res.data.data.birthDate);
         retrievedDate.setDate(retrievedDate.getDate() - 1);
-        console.log(res.data.data);
         setData({
           ...data,
           name: res.data.data.name,
@@ -115,10 +114,6 @@ function EditUser() {
     setParsedDate(MyDateStringFormatted);
   }, [data.birthDate]);
 
-  useEffect(() => {
-    console.log(data);
-  }, [data]);
-
   const handleSubmit = (event) => {
     event.preventDefault();
     // Check if any required fields are empty
@@ -146,7 +141,6 @@ function EditUser() {
       }
       hasError = true;
     } else {
-      console.log("fixed error name");
       setNameErrorMessage(false); // Reset the error state to false
     }
     // Validate lastName
@@ -211,7 +205,6 @@ function EditUser() {
       data.role !== 1 &&
       data.role !== 2
     ) {
-      console.log(data.role);
       setRoleErrorMessage(true);
       hasError = true;
     } else {
@@ -243,6 +236,7 @@ function EditUser() {
         ...data,
         birthDate: formattedDate,
       };
+      console.log("updatedData", updatedData);
       const formdata = new FormData();
       formdata.append("name", updatedData.name);
       formdata.append("lastName", updatedData.lastName);
@@ -255,7 +249,6 @@ function EditUser() {
       formdata.append("confirmPassword", updatedData.confirmPassword);
       formdata.append("role", updatedData.role);
       formdata.append("image", updatedData.image);
-      console.log(updatedData);
       // Make the axios.put request with the updatedData
       axios
         .put("http://localhost:8081/api/persona/" + id, formdata, {
@@ -264,6 +257,8 @@ function EditUser() {
           },
         })
         .then((res) => {
+          console.log("Largo de imagen", updatedData.image.length);
+          console.log("res", res);
           if (res.data.Status === "Success") {
             let timerInterval;
             swalEdited.fire({
@@ -294,6 +289,7 @@ function EditUser() {
       formdata.append("role", data.role);
       formdata.append("image", data.image);
       console.log(data);
+      console.log("Largo de imagen", data.image.length);
       axios
         .put("http://localhost:8081/api/persona/" + id, formdata, {
           headers: {
@@ -301,6 +297,7 @@ function EditUser() {
           },
         })
         .then((res) => {
+          console.log("res", res);
           if (res.data.Status === "Success") {
             let timerInterval;
             swalEdited.fire({

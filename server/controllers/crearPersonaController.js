@@ -7,6 +7,7 @@ const bcrypt = require("bcrypt")
 
 const uploadMiddleware = require("../middlewares/upload.middleware")
 const Persona = require('../models/CrearPeronaModel');
+const { resolve } = require('path');
 
 class CrearPersonaController {
   static getAll(req, res) {
@@ -19,7 +20,6 @@ class CrearPersonaController {
   static getById(req, res) {
     const id = req.params.id;
     Persona.getById(id, (result) => {
-      console.log(result)
       if (result) {
         res.json({ data: result });
       } else {
@@ -82,17 +82,9 @@ class CrearPersonaController {
 
   static update(req, res) {
     const { id } = req.params;
-    console.log(req.body)
-    const { name,
-      lastName,
-      rut,
-      email,
-      birthDate,
-      address,
-      role,
-      image,
-      phone, } = req.body;
-
+    const image = req.file ? req.file.filename : null;
+    const { name, lastName, rut, email, birthDate, address, role, phone } = req.body;
+    const validImageFormats = ['image/png', 'image/jpeg', 'image/jpg'];
     const personaData = {
       name,
       lastName,
@@ -104,13 +96,13 @@ class CrearPersonaController {
       image,
       phone,
     };
+    console.log(req.file)
+    if (req.file !== undefined) {
+      if (!validImageFormats.includes(req.file.mimetype)) {
 
-    // if (password !== password_confirm) {
-    //   return res.status(400).json({
-    //     estado: 'Failed',
-    //     message: 'Las contraseñas no coinciden',
-    //   });
-    // }
+        return res.json({ Status: "Error", Error: "Invalid file format. Only PNG, JPG, and JPEG are allowed." });
+      }
+    }
 
     if (!id) {
       return res.status(400).json({
