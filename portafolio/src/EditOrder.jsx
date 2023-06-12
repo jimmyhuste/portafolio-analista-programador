@@ -519,7 +519,7 @@ function EditOrder() {
           if (res.data.Status === "Success") {
             let timerInterval;
             swalEdited.fire({
-              title: "Usuario modificado",
+              title: "Orden modificada",
               timer: 3000,
               timerProgressBar: true,
               confirmButtonText: "Cerrar",
@@ -543,7 +543,7 @@ function EditOrder() {
           if (res.data.Status === "Success") {
             let timerInterval;
             swalEdited.fire({
-              title: "Usuario modificado",
+              title: "Orden modificada",
               timer: 3000,
               timerProgressBar: true,
               confirmButtonText: "Cerrar",
@@ -997,7 +997,7 @@ function EditOrder() {
         <div className="col-12 row">
           <div className="col-12 col-sm-6 col-md-4 offset-md-2 col-lg-3 offset-lg-3 mb-3">
             <button type="submit" className="btn btn-success w-100">
-              Editar orden
+              Editar
             </button>
           </div>
           <div className="col-12 col-sm-6 col-md-4 col-lg-3">

@@ -243,10 +243,22 @@ function EditUser() {
         ...data,
         birthDate: formattedDate,
       };
-
+      const formdata = new FormData();
+      formdata.append("name", updatedData.name);
+      formdata.append("lastName", updatedData.lastName);
+      formdata.append("rut", updatedData.rut);
+      formdata.append("email", updatedData.email);
+      formdata.append("birthDate", updatedData.birthDate);
+      formdata.append("address", updatedData.address);
+      formdata.append("phone", updatedData.phone);
+      formdata.append("password", updatedData.password);
+      formdata.append("confirmPassword", updatedData.confirmPassword);
+      formdata.append("role", updatedData.role);
+      formdata.append("image", updatedData.image);
+      console.log(updatedData);
       // Make the axios.put request with the updatedData
       axios
-        .put("http://localhost:8081/api/persona/" + id, updatedData, {
+        .put("http://localhost:8081/api/persona/" + id, formdata, {
           headers: {
             Authorization: `Bearer ${token}`, // Include the token in the Authorization header
           },
@@ -269,8 +281,21 @@ function EditUser() {
         .catch((err) => console.log(err));
     } else {
       // If the birthDate is not an object, make the axios.put request with the original data
+      const formdata = new FormData();
+      formdata.append("name", data.name);
+      formdata.append("lastName", data.lastName);
+      formdata.append("rut", data.rut);
+      formdata.append("email", data.email);
+      formdata.append("birthDate", data.birthDate);
+      formdata.append("address", data.address);
+      formdata.append("phone", data.phone);
+      formdata.append("password", data.password);
+      formdata.append("confirmPassword", data.confirmPassword);
+      formdata.append("role", data.role);
+      formdata.append("image", data.image);
+      console.log(data);
       axios
-        .put("http://localhost:8081/api/persona/" + id, data, {
+        .put("http://localhost:8081/api/persona/" + id, formdata, {
           headers: {
             Authorization: `Bearer ${token}`, // Include the token in the Authorization header
           },
@@ -380,7 +405,7 @@ function EditUser() {
               </div>
             )}
           </div>
-          <div className="col-6">
+          <div className="col-12 col-md-6">
             <label htmlFor="inputEmail" className="form-label">
               Email *
             </label>
@@ -401,7 +426,7 @@ function EditUser() {
               </div>
             )}
           </div>
-          <div className="col-6">
+          <div className="col-12 col-md-6">
             <label htmlFor="inputBirthDate" className="form-label">
               Fecha de nacimiento
             </label>
@@ -422,7 +447,7 @@ function EditUser() {
               </div>
             )}
           </div>
-          <div className="col-6">
+          <div className="col-12 col-md-6">
             <label htmlFor="inputAddress" className="form-label">
               Dirección
             </label>
@@ -436,7 +461,7 @@ function EditUser() {
               value={data.address}
             />
           </div>
-          <div className="col-6">
+          <div className="col-12 col-md-6">
             <label htmlFor="inputPassword" className="form-label">
               Contraseña *
             </label>
@@ -449,7 +474,7 @@ function EditUser() {
               onChange={(e) => setData({ ...data, password: e.target.value })}
             />
           </div>
-          <div className="col-6">
+          <div className="col-12 col-md-6">
             <label htmlFor="inputConfirmPassword" className="form-label">
               Confirmar Contraseña *
             </label>
@@ -477,7 +502,7 @@ function EditUser() {
               </div>
             )}
           </div>
-          <div className="col-6">
+          <div className="col-12 col-md-6">
             <label htmlFor="inputRole" className="form-label">
               Rol *
             </label>
@@ -490,14 +515,14 @@ function EditUser() {
               <option value="2">Laboratorista</option>
             </select>
             {roleErrorMessage && (
-              <div className="col-6">
+              <div className="col-12">
                 <div style={styles.error}>
                   <span>Debe seleccionar un rol</span>
                 </div>
               </div>
             )}
           </div>
-          <div className="col-6">
+          <div className="col-12 col-md-6">
             <label htmlFor="inputPhone" className="form-label">
               Número telefónico
             </label>
@@ -518,7 +543,7 @@ function EditUser() {
               </div>
             )}
           </div>
-          <div className="col-8 offset-2">
+          <div className="col-12 offset-0 col-md-8 offset-md-2">
             <label htmlFor="inputFile" className="form-label">
               Foto de perfil
             </label>
@@ -529,14 +554,14 @@ function EditUser() {
               onChange={(e) => setData({ ...data, image: e.target.files[0] })}
             />
           </div>
-          <div className="col-4 offset-3">
-            <button type="submit" className="btn btn-success w-50">
-              Editar usuario
+          <div className="col-12 col-sm-6 col-md-4 offset-md-2 col-lg-3 offset-lg-3">
+            <button type="submit" className="btn btn-success w-100">
+              Editar
             </button>
           </div>
-          <div className="col-4">
+          <div className="col-12 col-sm-6 col-md-4 col-lg-3">
             <button
-              className="btn btn-danger w-50 btn-secondary"
+              className="btn btn-danger w-100 btn-secondary"
               onClick={() => navigate("/users")}
             >
               Volver

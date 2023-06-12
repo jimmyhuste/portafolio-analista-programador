@@ -126,6 +126,7 @@ class Persona {
         role,
         image,
         phone } = personaData;
+      console.log(personaData)
       const sqlPersonas = 'UPDATE personas SET nombre=?, apellido=?, fecha_nacimiento=?, direccion=?, celular=?, email=?, rol_id=? WHERE rut=?';
       const sqlUsuarios = 'UPDATE usuarios SET imagen=? WHERE rut=?';
       const valuesP = [name, lastName, birthDate, address, phone, email, role, rut];

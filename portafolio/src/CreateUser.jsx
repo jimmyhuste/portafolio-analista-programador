@@ -483,7 +483,7 @@ function CreateUser() {
             </div>
           )}
         </div>
-        <div className="col-8 offset-2">
+        <div className="col-12 offset-0 col-md-8 offset-md-2">
           <label htmlFor="inputFile" className="form-label">
             Foto de perfil
           </label>
@@ -494,14 +494,14 @@ function CreateUser() {
             onChange={(e) => setData({ ...data, image: e.target.files[0] })}
           />
         </div>
-        <div className="col-4 offset-3">
-          <button type="submit" className="btn btn-success w-50">
-            Crear usuario
+        <div className="col-12 col-sm-6 col-md-4 offset-md-2 col-lg-3 offset-lg-3 mb-3">
+          <button type="submit" className="btn btn-success w-100">
+            Crear
           </button>
         </div>
-        <div className="col-4">
+        <div className="col-12 col-sm-6 col-md-4 col-lg-3">
           <button
-            className="btn btn-danger w-50 btn-secondary"
+            className="btn btn-danger w-100 btn-secondary"
             onClick={() => navigate("/users")}
           >
             Volver

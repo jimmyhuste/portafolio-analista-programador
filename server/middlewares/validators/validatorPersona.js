@@ -1,5 +1,6 @@
 const { check, validationResult } = require("express-validator");
 
+const nameRegex = /^[A-Za-z]*(?:\s[A-Za-z]*){0,2}$/;
 const validarPersona = () => {
   return [
     check('email', 'Email es inválido')
@@ -13,7 +14,7 @@ const validarPersona = () => {
       .notEmpty()
       .isLength({ min: 3, max: 25 })
       .withMessage('El nombre debe tener entre 3 y 25 caracteres')
-      .custom((value) => !/\d/.test(value))
+      .custom((value) => nameRegex.test(value))
       .withMessage('El nombre no puede contener caracteres numéricos')
       .escape(),
     check('lastName', 'Apellido es inválido')
@@ -21,7 +22,7 @@ const validarPersona = () => {
       .notEmpty()
       .isLength({ min: 3, max: 25 })
       .withMessage('El apellido debe tener entre 3 y 25 caracteres')
-      .custom((value) => !/\d/.test(value))
+      .custom((value) => nameRegex.test(value))
       .withMessage('El apellido no puede contener caracteres numéricos')
       .escape(),
     check('address', 'Dirección es inválida')

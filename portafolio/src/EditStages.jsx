@@ -345,7 +345,7 @@ function EditStages() {
           </div>
           <div className="col-12 col-sm-6 col-md-4 offset-md-2 col-lg-3 offset-lg-3">
             <button type="submit" className="btn btn-success w-100">
-              Editar etapa
+              Editar
             </button>
           </div>
           <div className="col-12 col-sm-6 col-md-4 col-lg-3">
