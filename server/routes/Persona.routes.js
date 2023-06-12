@@ -14,6 +14,7 @@ router.use((err, req, res, next) => {
         // Multer error occurred (e.g., file size exceeds limit)
         res.status(400).json({ error: 'Multer Error: ' + err.message });
     } else if (err) {
+        console.log("asdasdd")
         // Other error occurred (e.g., file type not allowed)
         res.status(400).json({ error: err.message });
     } else {

@@ -58,16 +58,17 @@ const validarOrdenes = () => {
             .withMessage('La fecha de creación debe tener el siguiente formato: YYYY-MM-DD'),
 
         check('stage', 'Etapa es inválida')
-            .optional({ checkFalsy: true })
+            .notEmpty()
             .isInt()
             .withMessage('La etapa debe ser un número entero'),
 
         check('fileNumber', 'Número de ficha es inválido')
             .notEmpty()
             .isInt()
+            .withMessage('La orden debe ser un número entero')
             .withMessage('El número de ficha debe ser un número entero').
             isLength({ max: 8 })
-            .withMessage('La etapa debe ser un número entero'),
+            .withMessage('La orden debe tener largo maximo de 8'),
 
         check('medicalCenter', 'Centro es inválido')
             .notEmpty()

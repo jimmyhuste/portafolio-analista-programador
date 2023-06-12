@@ -6,6 +6,7 @@ import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import AlertComponent from "./components/AlertComponent";
 import { DotSpinner } from "@uiball/loaders";
+import Swal from "sweetalert2";
 
 function EditUser() {
   const { id } = useParams();
@@ -55,6 +56,14 @@ function EditUser() {
         theme: "colored",
       }
     );
+
+  const swalEdited = Swal.mixin({
+    customClass: {
+      confirmButton: "close-button",
+      title: "title",
+    },
+    buttonsStyling: false,
+  });
 
   const handleClose = () => {
     setPassErrorMessage(false);
@@ -244,7 +253,17 @@ function EditUser() {
         })
         .then((res) => {
           if (res.data.Status === "Success") {
-            navigate("/users");
+            let timerInterval;
+            swalEdited.fire({
+              title: "Usuario modificado",
+              timer: 3000,
+              timerProgressBar: true,
+              confirmButtonText: "Cerrar",
+              willClose: () => {
+                clearInterval(timerInterval);
+                navigate("/users");
+              },
+            });
           }
         })
         .catch((err) => console.log(err));
@@ -258,7 +277,17 @@ function EditUser() {
         })
         .then((res) => {
           if (res.data.Status === "Success") {
-            navigate("/users");
+            let timerInterval;
+            swalEdited.fire({
+              title: "Usuario modificado",
+              timer: 3000,
+              timerProgressBar: true,
+              confirmButtonText: "Cerrar",
+              willClose: () => {
+                clearInterval(timerInterval);
+                navigate("/users");
+              },
+            });
           }
         })
         .catch((err) => console.log(err));

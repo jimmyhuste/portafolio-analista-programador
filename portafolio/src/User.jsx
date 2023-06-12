@@ -5,6 +5,7 @@ import DataTable from "react-data-table-component";
 import DataTableExtensions from "react-data-table-component-extensions";
 import "react-data-table-component-extensions/dist/index.css";
 import { DotSpinner } from "@uiball/loaders";
+import Swal from "sweetalert2";
 
 function User() {
   const [data, setData] = useState([]);
@@ -26,6 +27,40 @@ function User() {
       });
   }, []);
 
+  const swalWillDelete = Swal.mixin({
+    customClass: {
+      confirmButton: "accept-button",
+      cancelButton: "cancel-button",
+    },
+    buttonsStyling: false,
+  });
+
+  const deleteAlert = (rut) => {
+    swalWillDelete
+      .fire({
+        title: "¿Estás seguro?",
+        text: "Una vez eliminado, no podrás recuperar este usuario",
+        icon: "warning",
+        showCancelButton: true, // Display the cancel button
+        confirmButtonText: "Eliminar", // Text for the confirm button
+        cancelButtonText: "Cancelar", // Text for the cancel button
+      })
+      .then((result) => {
+        if (result.isConfirmed) {
+          // User clicked the confirm button
+          handleDelete(rut);
+        }
+      });
+  };
+
+  const swalDeleted = Swal.mixin({
+    customClass: {
+      confirmButton: "close-button",
+      title: "title",
+    },
+    buttonsStyling: false,
+  });
+
   const handleDelete = (rut) => {
     axios
       .delete("http://localhost:8081/api/persona/" + rut, {
@@ -35,7 +70,17 @@ function User() {
       })
       .then((res) => {
         if (res.data.Status === "Success") {
-          window.location.reload(true);
+          let timerInterval;
+          swalDeleted.fire({
+            title: "Usuario eliminado",
+            timer: 5000,
+            timerProgressBar: true,
+            confirmButtonText: "Cerrar",
+            willClose: () => {
+              clearInterval(timerInterval);
+              window.location.reload(true);
+            },
+          });
         } else {
           alert("Error");
         }
@@ -97,7 +142,7 @@ function User() {
             Editar
           </button>
           <button
-            onClick={() => handleDelete(row.rut)}
+            onClick={() => deleteAlert(row.rut)}
             className="btn btn-outline-danger btn-sm"
           >
             Eliminar

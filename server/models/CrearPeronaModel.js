@@ -65,7 +65,6 @@ class Persona {
         }
         return;
       }
-
       const sqlUsuarios = 'INSERT INTO usuarios (rut, password, imagen) VALUES (?, ?, ?)';
       const sqlPersonas = 'INSERT INTO personas (rut, nombre, apellido, fecha_nacimiento, direccion, celular, email, rol_id) VALUES (?, ?, ?, ?, ?, ?, ?, ?)';
 

@@ -5,6 +5,7 @@ import DataTable from "react-data-table-component";
 import DataTableExtensions from "react-data-table-component-extensions";
 import "react-data-table-component-extensions/dist/index.css";
 import { DotSpinner } from "@uiball/loaders";
+import Swal from "sweetalert2";
 
 function Order() {
   const token = localStorage.getItem("token");
@@ -18,6 +19,36 @@ function Order() {
     workType: "",
     stage: "",
   });
+
+  useEffect(() => {
+    axios
+      .get("http://localhost:8081/api/ordenes", {
+        headers: {
+          Authorization: `Bearer ${token}`, // Include the token in the Authorization header
+        },
+      })
+      .then((res) => {
+        if (res.data.Status === "Success") {
+          setData(res.data.Results);
+          console.log(res);
+          setDataTable(
+            res.data.Results.map((order) => {
+              return {
+                id: order.id,
+                creationDate: formatDate(order.fecha_creacion),
+                fileNumber: order.numero_ficha,
+                medicalCenter: order.nombre_centro,
+                workType: order.nombre_trabajo,
+                stage: order.nombre_etapas,
+              };
+            })
+          );
+          setDataLoaded(true);
+        } else {
+          alert("Error");
+        }
+      });
+  }, []);
 
   const columns = [
     {
@@ -67,7 +98,7 @@ function Order() {
       ),
       sortable: true,
       cellExport: (row) => row.nombre_etapas,
-      maxWidth: "10%",
+      maxWidth: "35%",
     },
     {
       name: "Centro",
@@ -91,7 +122,7 @@ function Order() {
             Editar
           </button>
           <button
-            onClick={() => handleDelete(row.id)}
+            onClick={() => deleteAlert(row.id)}
             className="btn btn-outline-danger btn-sm"
           >
             Eliminar
@@ -103,46 +134,39 @@ function Order() {
     },
   ];
 
-  useEffect(() => {
-    axios
-      .get("http://localhost:8081/api/ordenes", {
-        headers: {
-          Authorization: `Bearer ${token}`, // Include the token in the Authorization header
-        },
+  const swalWillDelete = Swal.mixin({
+    customClass: {
+      confirmButton: "accept-button",
+      cancelButton: "cancel-button",
+    },
+    buttonsStyling: false,
+  });
+
+  const deleteAlert = (id) => {
+    swalWillDelete
+      .fire({
+        title: "¿Estás seguro?",
+        text: "Una vez eliminado, no podrás recuperar esta orden",
+        icon: "warning",
+        showCancelButton: true, // Display the cancel button
+        confirmButtonText: "Eliminar", // Text for the confirm button
+        cancelButtonText: "Cancelar", // Text for the cancel button
       })
-      .then((res) => {
-        if (res.data.Status === "Success") {
-          setData(res.data.Results);
-          console.log(res);
-          setDataTable(
-            res.data.Results.map((order) => {
-              return {
-                id: order.id,
-                creationDate: formatDate(order.fecha_creacion),
-                fileNumber: order.numero_ficha,
-                medicalCenter: order.nombre_centro,
-                workType: order.nombre_trabajo,
-                stage: order.nombre_etapas,
-              };
-            })
-          );
-          setDataLoaded(true);
-        } else {
-          alert("Error");
+      .then((result) => {
+        if (result.isConfirmed) {
+          // User clicked the confirm button
+          handleDelete(id);
         }
       });
-  }, []);
-
-  const formatDate = (creationDate) => {
-    const date = new Date(creationDate);
-    const creationDateFormatted =
-      ("0" + date.getDate()).slice(-2) +
-      "-" +
-      ("0" + (date.getMonth() + 1)).slice(-2) +
-      "-" +
-      date.getFullYear();
-    return creationDateFormatted;
   };
+
+  const swalDeleted = Swal.mixin({
+    customClass: {
+      confirmButton: "close-button",
+      title: "title",
+    },
+    buttonsStyling: false,
+  });
 
   const handleDelete = (id) => {
     axios
@@ -154,10 +178,32 @@ function Order() {
       .then((res) => {
         if (res.data.Status === "Success") {
           window.location.reload(true);
+          let timerInterval;
+          swalDeleted.fire({
+            title: "Orden eliminada",
+            timer: 5000,
+            timerProgressBar: true,
+            confirmButtonText: "Cerrar",
+            willClose: () => {
+              clearInterval(timerInterval);
+              window.location.reload(true);
+            },
+          });
         } else {
           alert(id);
         }
       });
+  };
+
+  const formatDate = (creationDate) => {
+    const date = new Date(creationDate);
+    const creationDateFormatted =
+      ("0" + date.getDate()).slice(-2) +
+      "-" +
+      ("0" + (date.getMonth() + 1)).slice(-2) +
+      "-" +
+      date.getFullYear();
+    return creationDateFormatted;
   };
 
   // useEffect(() => {

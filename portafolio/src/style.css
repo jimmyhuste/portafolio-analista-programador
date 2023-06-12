@@ -77,3 +77,63 @@
   position: relative;
   top: -2px;
 }
+
+.alert-close:hover {
+  background-color: #000;
+  color: #fff;
+}
+
+.cancel-button {
+  background-color: transparent;
+  color: #c51c10;
+  padding: 6px 16px;
+  margin: 0px 8px;
+  border: 2px solid #c51c10;
+  border-radius: 12px;
+  transition: background-color 0.3s ease;
+  font-family: "Helvetica Neue", Arial, sans-serif; /* Added font-family */
+}
+
+.cancel-button:hover {
+  background-color: #c51c10;
+  border: 2px solid #c51c10;
+  color: #ffff;
+}
+
+.accept-button {
+  background-color: transparent;
+  color: #007d19;
+  padding: 6px 16px;
+  margin: 0px 8px;
+  border: 2px solid #007d19;
+  border-radius: 12px;
+  transition: background-color 0.3s ease;
+  font-family: "Helvetica Neue", Arial, sans-serif; /* Added font-family */
+}
+
+.accept-button:hover {
+  background-color: #007d19;
+  border: 2px solid #007d19;
+  color: #ffff;
+}
+
+.close-button {
+  background-color: transparent;
+  color: #c51c10;
+  padding: 6px 16px;
+  margin: 0px 8px;
+  border: 2px solid #c51c10;
+  border-radius: 12px;
+  transition: background-color 0.3s ease;
+  font-family: "Helvetica Neue", Arial, sans-serif; /* Added font-family */
+}
+
+.close-button:hover {
+  background-color: #c51c10;
+  border: 2px solid #c51c10;
+  color: #ffff;
+}
+
+.title {
+  font-family: "Helvetica Neue", Arial, sans-serif; /* Added font-family */
+}

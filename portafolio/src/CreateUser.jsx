@@ -8,6 +8,7 @@ import "react-toastify/dist/ReactToastify.css";
 import AlertComponent from "./components/AlertComponent";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faEye, faEyeSlash } from "@fortawesome/free-solid-svg-icons";
+import Swal from "sweetalert2";
 
 function CreateUser() {
   const navigate = useNavigate();
@@ -58,6 +59,14 @@ function CreateUser() {
         theme: "colored",
       }
     );
+
+  const swalCreated = Swal.mixin({
+    customClass: {
+      confirmButton: "close-button",
+      title: "title",
+    },
+    buttonsStyling: false,
+  });
 
   const handleCloseEmpty = () => {
     setEmptyFieldsMessage(false);
@@ -191,10 +200,16 @@ function CreateUser() {
     }
     // Validate phone
     const phoneRegex = /^[0-9]*$/;
-    if (!phoneRegex.test(data.phone) || data.phone.length > 15) {
+    if (
+      !phoneRegex.test(data.phone) ||
+      data.phone.length > 15 ||
+      data.phone.length < 8
+    ) {
       setPhoneErrorMessage(true);
       if (data.phone.length > 15) {
         setPhoneMessage("Máximo 15 dígitos");
+      } else if (data.phone.length < 8) {
+        setPhoneMessage("Mínimo 8 dígitos");
       } else {
         setPhoneMessage("Sólo se permiten números");
       }
@@ -217,6 +232,7 @@ function CreateUser() {
     if (hasError) {
       return;
     }
+
     const formdata = new FormData();
     formdata.append("rut", data.rut);
     formdata.append("password", data.password);
@@ -239,7 +255,24 @@ function CreateUser() {
       .then((res) => {
         console.log(res);
         if (res.data.Status !== "Error") {
-          navigate("/users");
+          let timerInterval;
+          swalCreated.fire({
+            title: "Usuario creado",
+            timer: 3000,
+            timerProgressBar: true,
+            confirmButtonText: "Cerrar",
+            willClose: () => {
+              clearInterval(timerInterval);
+              navigate("/users");
+            },
+          });
+        } else {
+          Swal.fire({
+            title: "Error",
+            text: res.data.Message,
+            icon: "error",
+            confirmButtonText: "Cerrar",
+          });
         }
       })
       .catch((err) => {
@@ -320,7 +353,7 @@ function CreateUser() {
             </div>
           )}
         </div>
-        <div className="col-6">
+        <div className="col-12 col-md-6">
           <label htmlFor="inputEmail" className="form-label">
             Email *
           </label>
@@ -340,7 +373,7 @@ function CreateUser() {
             </div>
           )}
         </div>
-        <div className="col-6">
+        <div className="col-12 col-md-6">
           <label htmlFor="inputBirthDate" className="form-label">
             Fecha de nacimiento
           </label>
@@ -360,7 +393,7 @@ function CreateUser() {
             </div>
           )}
         </div>
-        <div className="col-6">
+        <div className="col-12 col-md-6">
           <label htmlFor="inputAddress" className="form-label">
             Dirección
           </label>
