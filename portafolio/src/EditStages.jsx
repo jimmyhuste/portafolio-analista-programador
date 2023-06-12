@@ -2,6 +2,7 @@ import axios from "axios";
 import { useEffect, useState } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import DateComponent from "./components/DateComponent";
+import { DotSpinner } from "@uiball/loaders";
 
 function EditStages() {
   const { id } = useParams();
@@ -227,6 +228,14 @@ function EditStages() {
       .catch((err) => console.log(err));
   };
 
+  if (!dataLoaded) {
+    return (
+      <div style={styles.spinner}>
+        <DotSpinner size={35} color="#231F20" />
+      </div>
+    );
+  }
+
   return (
     <div className="d-flex flex-column mx-auto align-items-center pt-2 mt-3 border  w-75">
       <h2>Edición etapa de orden N°{data.id_orden}</h2>
@@ -393,5 +402,11 @@ const styles = {
     overflow: "scroll",
     resize: "vertical",
     overflowX: "auto",
+  },
+  spinner: {
+    display: "flex",
+    justifyContent: "center",
+    alignItems: "center",
+    height: "100vh",
   },
 };

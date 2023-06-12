@@ -5,6 +5,7 @@ import ChileanRutify from "chilean-rutify";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import AlertComponent from "./components/AlertComponent";
+import { DotSpinner } from "@uiball/loaders";
 
 function EditUser() {
   const { id } = useParams();
@@ -263,6 +264,14 @@ function EditUser() {
         .catch((err) => console.log(err));
     }
   };
+
+  if (!dataLoaded) {
+    return (
+      <div style={styles.spinner}>
+        <DotSpinner size={35} color="#231F20" />
+      </div>
+    );
+  }
 
   return (
     <div className="d-flex flex-column mx-auto align-items-center pt-2 mt-3 border  w-75">
@@ -552,5 +561,11 @@ const styles = {
     display: "flex",
     justifyContent: "center",
     alignItems: "center",
+  },
+  spinner: {
+    display: "flex",
+    justifyContent: "center",
+    alignItems: "center",
+    height: "100vh",
   },
 };

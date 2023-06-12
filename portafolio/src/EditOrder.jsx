@@ -3,11 +3,13 @@ import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import AlertComponent from "./components/AlertComponent";
 import ChileanRutify from "chilean-rutify";
+import { DotSpinner } from "@uiball/loaders";
 
 function EditOrder() {
   const { id } = useParams();
   const token = localStorage.getItem("token");
   const navigate = useNavigate();
+  const [dataLoaded, setDataLoaded] = useState(false);
   const [data, setData] = useState({
     creationDate: "",
     fileNumber: "",
@@ -107,6 +109,7 @@ function EditOrder() {
           billingDate: billinghDate,
           licence: res.data.licencia,
         });
+        setDataLoaded(true);
         setName({
           name: res.data.numero_ficha,
         });
@@ -523,6 +526,14 @@ function EditOrder() {
         .catch((err) => console.log(err));
     }
   };
+
+  if (!dataLoaded) {
+    return (
+      <div style={styles.spinner}>
+        <DotSpinner size={35} color="#231F20" />
+      </div>
+    );
+  }
 
   return (
     <div className="d-flex flex-column mx-auto align-items-center pt-2 mt-3 border  w-75">
@@ -1001,5 +1012,11 @@ const styles = {
     display: "flex",
     justifyContent: "center",
     alignItems: "center",
+  },
+  spinner: {
+    display: "flex",
+    justifyContent: "center",
+    alignItems: "center",
+    height: "100vh",
   },
 };
