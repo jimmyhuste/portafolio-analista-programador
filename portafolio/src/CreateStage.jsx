@@ -25,7 +25,7 @@ function CreateStage() {
   const [descriptionErrorMessage, setDescriptionErrorMessage] = useState(false);
   const [descriptionMessage, setDescriptionMessage] = useState(false);
   const [deliveryMessage, setDeliveryMessage] = useState("");
-  const [deadlineMessage, setDeadlineMessage] = useState("false");
+  const [deadlineMessage, setDeadlineMessage] = useState("");
 
   const handleCloseEmpty = () => {
     setEmptyFieldsMessage(false);
@@ -39,18 +39,6 @@ function CreateStage() {
     event.preventDefault();
     // Error handler
     let hasError = false;
-    // Check if any required fields are empty
-    // if (
-    //   data.id_etapa === "" ||
-    //   data.id_estado === "" ||
-    //   data.fecha_envio === "" ||
-    //   data.fecha_entrega === ""
-    // ) {
-    //   alert("Por favor, complete todos los campos obligatorios.");
-    //   setEmptyFieldsMessage(true);
-    //   return;
-    // }
-    setEmptyFieldsMessage(false);
     // Validate stage
     const validStages = [
       1,
@@ -97,20 +85,17 @@ function CreateStage() {
     );
     if (
       selectedShippingDate < minShippingDate ||
-      selectedShippingDate > maxShippingDate
+      selectedShippingDate > maxShippingDate ||
+      data.fecha_envio === ""
     ) {
-      setShippingDateErrorMessage(true);
       setDeliveryMessage("Debe ser entre hoy y un año más.");
-      hasError = true;
-      console.log(minShippingDate, maxShippingDate, selectedShippingDate);
-    } else {
-      setShippingDateErrorMessage(false);
-    }
-    if (data.fecha_envio === "") {
       setShippingDateErrorMessage(true);
-      setDeliveryMessage("Campo obligatorio");
+      if (data.fecha_envio === "") {
+        setDeliveryMessage("Campo obligatorio");
+      }
       hasError = true;
     } else {
+      console.log("asdasd");
       setShippingDateErrorMessage(false);
     }
     // Validate deadline
@@ -125,17 +110,14 @@ function CreateStage() {
     );
     if (
       selectedDeadlineDate < minDeadlineDate ||
-      selectedDeadlineDate > maxDeadlineDate
+      selectedDeadlineDate > maxDeadlineDate ||
+      data.fecha_entrega === ""
     ) {
+      setDeadlineMessage("Debe ser entre hoy y 14 meses más.");
       setDeadlineErrorMessage(true);
-      setDeadlineMessage("Debe ser entre hoy y 12 meses más.");
-      hasError = true;
-    } else {
-      setDeadlineErrorMessage(false);
-    }
-    if (data.fecha_entrega === "") {
-      setDeadlineErrorMessage(true);
-      setDeadlineMessage("Campo obligatorio");
+      if (data.fecha_entrega === "") {
+        setDeadlineMessage("Campo obligatorio");
+      }
       hasError = true;
     } else {
       setDeadlineErrorMessage(false);

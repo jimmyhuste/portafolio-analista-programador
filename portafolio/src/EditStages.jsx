@@ -3,10 +3,12 @@ import { useEffect, useState } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import DateComponent from "./components/DateComponent";
 import { DotSpinner } from "@uiball/loaders";
+import AlertComponent from "./components/AlertComponent";
 
 function EditStages() {
   const { id } = useParams();
   const navigate = useNavigate();
+  const token = localStorage.getItem("token");
   const [dataLoaded, setDataLoaded] = useState(false);
   const [selectedDeliveryDate, setSelecteDeliveryDate] = useState(null);
   const [formattedDeliveryDate, setFormattedDeliveryDate] = useState(null);
@@ -20,6 +22,8 @@ function EditStages() {
   const [deadlineErrorMessage, setDeadlineErrorMessage] = useState(false);
   const [descriptionErrorMessage, setDescriptionErrorMessage] = useState(false);
   const [descriptionMessage, setDescriptionMessage] = useState(false);
+  const [deliveryMessage, setDeliveryMessage] = useState("");
+  const [deadlineMessage, setDeadlineMessage] = useState("");
   //ANCHOR - data
   const [data, setData] = useState({
     descripcion: "",
@@ -33,42 +37,56 @@ function EditStages() {
     nro_ficha: "",
   });
 
-  useEffect(() => {
-    axios.get("http://localhost:8081/getStage/" + id).then((res) => {
-      const creationDate = new Date(res.data.Result[0].fecha_inicio_estado);
-      creationDate.setDate(creationDate.getDate() + 1);
-      const creationDateFormatted =
-        creationDate.getFullYear() +
-        "-" +
-        ("0" + (creationDate.getMonth() + 1)).slice(-2) +
-        "-" +
-        ("0" + creationDate.getDate()).slice(-2);
-      console.log(res.data.Result[0]);
-      setData({
-        ...data,
-        descripcion: res.data.Result[0].descripcion,
-        fecha_entrega: res.data.Result[0].fecha_entrega,
-        fecha_envio: res.data.Result[0].fecha_envio,
-        fecha_inicio_estado: creationDateFormatted,
-        id: res.data.Result[0].id,
-        id_estado: res.data.Result[0].id_estado,
-        id_etapa: res.data.Result[0].id_etapa,
-        id_orden: res.data.Result[0].id_orden,
-        nro_ficha: res.data.Result[0].nro_ficha,
-      });
-      setSelecteDeliveryDate(
-        res.data.Result[0].fecha_envio
-          ? new Date(res.data.Result[0].fecha_envio)
-          : new Date()
-      );
+  const handleCloseEmpty = () => {
+    setEmptyFieldsMessage(false);
+  };
 
-      setSelecteDeadlineDate(
-        res.data.Result[0].fecha_entrega
-          ? new Date(res.data.Result[0].fecha_entrega)
-          : new Date()
-      );
-      setDataLoaded(true);
-    });
+  useEffect(() => {
+    console.log(shippingDateErrorMessage);
+    console.log(deadlineErrorMessage);
+  }, [shippingDateErrorMessage, deadlineErrorMessage]);
+  useEffect(() => {
+    axios
+      .get("http://localhost:8081/api/etapa/" + id, {
+        headers: {
+          Authorization: `Bearer ${token}`, // Include the token in the Authorization header
+        },
+      })
+      .then((res) => {
+        console.log(res);
+        const creationDate = new Date(res.data.data.fecha_inicio_estado);
+        creationDate.setDate(creationDate.getDate() + 1);
+        const creationDateFormatted =
+          creationDate.getFullYear() +
+          "-" +
+          ("0" + (creationDate.getMonth() + 1)).slice(-2) +
+          "-" +
+          ("0" + creationDate.getDate()).slice(-2);
+        setData({
+          ...data,
+          descripcion: res.data.data.descripcion,
+          fecha_entrega: res.data.data.fecha_entrega,
+          fecha_envio: res.data.data.fecha_envio,
+          fecha_inicio_estado: creationDateFormatted,
+          id: res.data.data.id,
+          id_estado: res.data.data.id_estado,
+          id_etapa: res.data.data.id_etapa,
+          id_orden: res.data.data.id_orden,
+          nro_ficha: res.data.data.nro_ficha,
+        });
+        setSelecteDeliveryDate(
+          res.data.data.fecha_envio
+            ? new Date(res.data.data.fecha_envio)
+            : new Date()
+        );
+
+        setSelecteDeadlineDate(
+          res.data.data.fecha_entrega
+            ? new Date(res.data.data.fecha_entrega)
+            : new Date()
+        );
+        setDataLoaded(true);
+      });
   }, []);
 
   useEffect(() => {
@@ -103,18 +121,6 @@ function EditStages() {
     event.preventDefault();
     // Error handler
     let hasError = false;
-    // Check if any required fields are empty
-    // if (
-    //   data.id_etapa === "" ||
-    //   data.id_estado === "" ||
-    //   data.fecha_envio === "" ||
-    //   data.fecha_entrega === ""
-    // ) {
-    //   alert("Por favor, complete todos los campos obligatorios.");
-    //   setEmptyFieldsMessage(true);
-    //   return;
-    // }
-    setEmptyFieldsMessage(false);
     // Validate stage
     const validStages = [
       1,
@@ -160,9 +166,14 @@ function EditStages() {
     );
     if (
       selectedDeliveryDate < minShippingDate ||
-      selectedDeliveryDate > maxShippingDate
+      selectedDeliveryDate > maxShippingDate ||
+      data.fecha_envio === ""
     ) {
+      setDeliveryMessage("Debe ser entre hoy y un año más.");
       setShippingDateErrorMessage(true);
+      if (data.fecha_envio === "") {
+        setDeliveryMessage("Campo obligatorio");
+      }
       hasError = true;
     } else {
       setShippingDateErrorMessage(false);
@@ -179,9 +190,14 @@ function EditStages() {
     );
     if (
       selectedDeadlineDate < minDeadlineDate ||
-      selectedDeadlineDate > maxDeadlineDate
+      selectedDeadlineDate > maxDeadlineDate ||
+      data.fecha_entrega === ""
     ) {
+      setDeadlineMessage("Debe ser entre hoy y 14 meses más.");
       setDeadlineErrorMessage(true);
+      if (data.fecha_entrega === "") {
+        setDeadlineMessage("Campo obligatorio");
+      }
       hasError = true;
     } else {
       setDeadlineErrorMessage(false);
@@ -199,13 +215,25 @@ function EditStages() {
     } else {
       setDescriptionErrorMessage(false);
     }
+    // Check if any required fields are empty
+    if (
+      data.id_etapa === "" ||
+      data.id_estado === "" ||
+      data.fecha_envio === "" ||
+      data.fecha_entrega === ""
+    ) {
+      setEmptyFieldsMessage(true);
+      return;
+    }
+    setEmptyFieldsMessage(false);
+    setEmptyFieldsMessage(false);
     if (hasError) {
       return;
     }
     const requestData = {
       ...data,
-      fecha_entrega: data.fecha_entrega || "1970-01-01",
-      fecha_envio: data.fecha_envio || "1970-01-01",
+      fecha_entrega: data.fecha_entrega,
+      fecha_envio: data.fecha_envio,
     };
 
     if (requestData.fecha_entrega) {
@@ -219,7 +247,11 @@ function EditStages() {
         .split("T")[0];
     }
     axios
-      .put("http://localhost:8081/updateStage/" + id, requestData)
+      .put("http://localhost:8081/api/etapa/" + id, requestData, {
+        headers: {
+          Authorization: `Bearer ${token}`, // Include the token in the Authorization header
+        },
+      })
       .then((res) => {
         if (res.data.Status === "Success") {
           navigate("/stages/" + data.id_orden);
@@ -239,6 +271,14 @@ function EditStages() {
   return (
     <div className="d-flex flex-column mx-auto align-items-center pt-2 mt-3 border  w-75">
       <h2>Edición etapa de orden N°{data.id_orden}</h2>
+      <div className="col-12">
+        {emptyFieldsMessage && (
+          <AlertComponent
+            emptyFieldsMessage={emptyFieldsMessage}
+            handleCloseEmpty={handleCloseEmpty}
+          />
+        )}
+      </div>
       {dataLoaded && (
         <form className="row g-3 p-4" onSubmit={handleSubmit}>
           <div className="col-12 col-md-6">
@@ -299,7 +339,7 @@ function EditStages() {
             {shippingDateErrorMessage && (
               <div className="col-12">
                 <div style={styles.error}>
-                  <span>Máximo un año de distancia</span>
+                  <span>{deliveryMessage}</span>
                 </div>
               </div>
             )}
@@ -315,7 +355,7 @@ function EditStages() {
             {deadlineErrorMessage && (
               <div className="col-12">
                 <div style={styles.error}>
-                  <span>Debe ser entre 1 año pasado y 14 meses futuros</span>
+                  <span>{deadlineMessage}</span>
                 </div>
               </div>
             )}

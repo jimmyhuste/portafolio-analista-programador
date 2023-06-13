@@ -110,7 +110,7 @@ function Stages() {
   };
 
   const handleDelete = (id) => {
-    axios.delete("http://localhost:8081/deleteStage/" + id).then((res) => {
+    axios.delete("http://localhost:8081/api/etapa/" + id).then((res) => {
       if (res.data.Status === "Success") {
         if (data.length > 1) {
           window.location.reload(true);
