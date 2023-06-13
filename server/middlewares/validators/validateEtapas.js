@@ -33,6 +33,7 @@ const validateEtapas = () => {
             .withMessage('La descripción no puede superar los 255 caracteres')
             .trim(),
         (req, res, next) => {
+            console.log('Validating etapa')
             const errors = validationResult(req);
             if (!errors.isEmpty()) {
                 const formattedErrors = errors.array().map((error) => {

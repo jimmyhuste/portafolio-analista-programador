@@ -2,6 +2,7 @@ import axios from "axios";
 import { useEffect, useState } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import AlertComponent from "./components/AlertComponent";
+import Swal from "sweetalert2";
 
 function CreateStage() {
   const navigate = useNavigate();
@@ -31,9 +32,13 @@ function CreateStage() {
     setEmptyFieldsMessage(false);
   };
 
-  useEffect(() => {
-    console.log(id, number);
-  }, []);
+  const swalCreated = Swal.mixin({
+    customClass: {
+      confirmButton: "close-button",
+      title: "title",
+    },
+    buttonsStyling: false,
+  });
 
   const handleSubmit = (event) => {
     event.preventDefault();
@@ -154,7 +159,17 @@ function CreateStage() {
         },
       })
       .then(() => {
-        navigate(`/stages/${id}`);
+        let timerInterval;
+        swalCreated.fire({
+          title: "Etapa creada",
+          timer: 3000,
+          timerProgressBar: true,
+          confirmButtonText: "Cerrar",
+          willClose: () => {
+            clearInterval(timerInterval);
+            navigate(`/stages/${id}`);
+          },
+        });
       })
       .catch((err) => {
         console.log(data), console.log(err);

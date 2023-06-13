@@ -4,6 +4,7 @@ import { Link, useNavigate, useParams } from "react-router-dom";
 import DateComponent from "./components/DateComponent";
 import { DotSpinner } from "@uiball/loaders";
 import AlertComponent from "./components/AlertComponent";
+import Swal from "sweetalert2";
 
 function EditStages() {
   const { id } = useParams();
@@ -41,10 +42,14 @@ function EditStages() {
     setEmptyFieldsMessage(false);
   };
 
-  useEffect(() => {
-    console.log(shippingDateErrorMessage);
-    console.log(deadlineErrorMessage);
-  }, [shippingDateErrorMessage, deadlineErrorMessage]);
+  const swalEdited = Swal.mixin({
+    customClass: {
+      confirmButton: "close-button",
+      title: "title",
+    },
+    buttonsStyling: false,
+  });
+
   useEffect(() => {
     axios
       .get("http://localhost:8081/api/etapa/" + id, {
@@ -210,8 +215,8 @@ function EditStages() {
         if (data.descripcion === "") {
           setDescriptionMessage("");
         }
+        hasError = true;
       }
-      hasError = true;
     } else {
       setDescriptionErrorMessage(false);
     }
@@ -253,8 +258,19 @@ function EditStages() {
         },
       })
       .then((res) => {
+        console.log(res);
         if (res.data.Status === "Success") {
-          navigate("/stages/" + data.id_orden);
+          let timerInterval;
+          swalEdited.fire({
+            title: "Orden modificada",
+            timer: 3000,
+            timerProgressBar: true,
+            confirmButtonText: "Cerrar",
+            willClose: () => {
+              clearInterval(timerInterval);
+              navigate("/stages/" + data.id_orden);
+            },
+          });
         }
       })
       .catch((err) => console.log(err));

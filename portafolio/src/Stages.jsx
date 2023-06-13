@@ -5,6 +5,7 @@ import DataTable from "react-data-table-component";
 import DataTableExtensions from "react-data-table-component-extensions";
 import "react-data-table-component-extensions/dist/index.css";
 import { DotSpinner } from "@uiball/loaders";
+import Swal from "sweetalert2";
 
 function Stages() {
   const navigate = useNavigate();
@@ -64,7 +65,7 @@ function Stages() {
           </button>
           <button
             onClick={() => {
-              handleDelete(row.id);
+              deleteAlert(row.id);
             }}
             className="btn btn-outline-danger btn-sm"
           >
@@ -77,9 +78,39 @@ function Stages() {
     },
   ];
 
-  useEffect(() => {
-    console.log("data", data);
-  }, [data]);
+  const swalWillDelete = Swal.mixin({
+    customClass: {
+      confirmButton: "accept-button",
+      cancelButton: "cancel-button",
+    },
+    buttonsStyling: false,
+  });
+
+  const deleteAlert = (id) => {
+    swalWillDelete
+      .fire({
+        title: "¿Estás seguro?",
+        text: "Una vez eliminado, no podrás recuperar este usuario",
+        icon: "warning",
+        showCancelButton: true, // Display the cancel button
+        confirmButtonText: "Eliminar", // Text for the confirm button
+        cancelButtonText: "Cancelar", // Text for the cancel button
+      })
+      .then((result) => {
+        if (result.isConfirmed) {
+          // User clicked the confirm button
+          handleDelete(id);
+        }
+      });
+  };
+
+  const swalDeleted = Swal.mixin({
+    customClass: {
+      confirmButton: "close-button",
+      title: "title",
+    },
+    buttonsStyling: false,
+  });
 
   useEffect(() => {
     axios
@@ -113,9 +144,29 @@ function Stages() {
     axios.delete("http://localhost:8081/api/etapa/" + id).then((res) => {
       if (res.data.Status === "Success") {
         if (data.length > 1) {
-          window.location.reload(true);
+          let timerInterval;
+          swalDeleted.fire({
+            title: "Etapa eliminada",
+            timer: 5000,
+            timerProgressBar: true,
+            confirmButtonText: "Cerrar",
+            willClose: () => {
+              clearInterval(timerInterval);
+              window.location.reload(true);
+            },
+          });
         } else {
-          navigate(`/orders/`);
+          let timerInterval;
+          swalDeleted.fire({
+            title: "Ultima etapa eliminada",
+            timer: 5000,
+            timerProgressBar: true,
+            confirmButtonText: "Cerrar",
+            willClose: () => {
+              clearInterval(timerInterval);
+              navigate(`/orders/`);
+            },
+          });
         }
       } else {
         alert("Error");
