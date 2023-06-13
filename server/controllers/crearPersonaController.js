@@ -96,10 +96,9 @@ class CrearPersonaController {
       image,
       phone,
     };
-    console.log(req.file)
+    console.log("personaDataController", personaData)
     if (req.file !== undefined) {
       if (!validImageFormats.includes(req.file.mimetype)) {
-
         return res.json({ Status: "Error", Error: "Invalid file format. Only PNG, JPG, and JPEG are allowed." });
       }
     }

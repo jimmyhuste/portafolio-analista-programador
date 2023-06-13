@@ -49,7 +49,7 @@ class Persona {
 
   static create(personaData, callback) {
     const { name, lastName, rut, email, birthDate, address, password, confirmPassword, role, image, phone } = personaData;
-    console.log("Personadata", personaData)
+    // console.log("Personadata", personaData)
     const existSql = 'SELECT * FROM personas WHERE rut = ? OR email = ?';
     db.query(existSql, [rut, email], (error, results) => {
       if (error) {
@@ -78,7 +78,7 @@ class Persona {
 
         const valuesU = [rut, hashedPass, image];
 
-        console.log('Password hasheado:', hashedPass);
+        // console.log('Password hasheado:', hashedPass);
 
         new Promise((resolve, reject) => {
           db.query(sqlPersonas, valuesP, (error, result) => {
@@ -126,12 +126,11 @@ class Persona {
         role,
         image,
         phone } = personaData;
-      console.log(personaData)
       const sqlPersonas = 'UPDATE personas SET nombre=?, apellido=?, fecha_nacimiento=?, direccion=?, celular=?, email=?, rol_id=? WHERE rut=?';
       const sqlUsuarios = 'UPDATE usuarios SET imagen=? WHERE rut=?';
       const valuesP = [name, lastName, birthDate, address, phone, email, role, rut];
-      const valuesU = [image, email, rut];
-
+      const valuesU = [image, rut];
+      console.log("image", image, "rut ", rut)
       db.beginTransaction((error) => {
         if (error) {
           console.error('Error al iniciar la transacción:', error);
