@@ -14,6 +14,7 @@ import EditOrder from "./EditOrder";
 import Stages from "./Stages";
 import EditStages from "./EditStages";
 import CreateStage from "./CreateStage";
+import ViewUser from "./ViewUser";
 
 function App() {
   return (
@@ -22,11 +23,12 @@ function App() {
         <Route path="/" element={<Dashboard />}>
           <Route path="" element={<Home />}></Route>
           <Route path="*" element={<Home />} /> {/* Route default */}
-          <Route path="/users" element={<User />}></Route>
           <Route path="/profile" element={<Profile />}></Route>
-          <Route path="/orders" element={<Order />}></Route>
+          <Route path="/users" element={<User />}></Route>
+          <Route path="/viewUser/:id" element={<ViewUser />}></Route>
           <Route path="/createuser" element={<CreateUser />}></Route>
           <Route path="/userEdit/:id" element={<EditUser />}></Route>
+          <Route path="/orders" element={<Order />}></Route>
           <Route path="/createorder" element={<CreateOrder />}></Route>
           <Route path="/orderEdit/:id" element={<EditOrder />}></Route>
           <Route path="/stages/:id" element={<Stages />}></Route>

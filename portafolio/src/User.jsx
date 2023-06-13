@@ -93,8 +93,7 @@ function User() {
       selector: (row) => row.nombre_rol,
       sortable: true,
       cellExport: (row) => row.nombre_rol,
-      maxWidth: "15%",
-      hide: "md",
+      maxWidth: "50%",
     },
     {
       name: "Foto perfil",
@@ -135,6 +134,15 @@ function User() {
           <button
             onClick={() => {
               // Redirect to the userEdit page
+              window.location.href = `/viewUser/${row.id}`;
+            }}
+            className="btn btn-outline-success btn-sm me-2"
+          >
+            Ver
+          </button>
+          <button
+            onClick={() => {
+              // Redirect to the userEdit page
               window.location.href = `/userEdit/${row.id}`;
             }}
             className="btn btn-outline-primary btn-sm me-2"
@@ -150,7 +158,8 @@ function User() {
         </>
       ),
       ignoreExport: true,
-      minWidth: "200px",
+      minWidth: "250px",
+      hide: "md",
     },
   ];
   if (data.length === 0) {

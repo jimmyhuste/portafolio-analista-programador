@@ -18,6 +18,12 @@
   border-radius: 50%;
 }
 
+.viewUserImage {
+  width: auto;
+  height: 150px;
+  border-radius: 50%;
+}
+
 .inputDescription {
   height: 1px; /* Set the desired height here */
   overflow-y: auto;
@@ -136,4 +142,12 @@
 
 .title {
   font-family: "Helvetica Neue", Arial, sans-serif; /* Added font-family */
+}
+.userTitle {
+  font-family: "Helvetica Neue", Arial, sans-serif; /* Added font-family */
+  font-size: 1.5em;
+}
+.userDetails {
+  font-family: "Helvetica Neue", Arial, sans-serif; /* Added font-family */
+  font-size: 1em;
 }
