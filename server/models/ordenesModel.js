@@ -19,7 +19,7 @@ class OrdenesModel {
 
     static getById(id) {
         return new Promise((resolve, reject) => {
-            const sql = `SELECT o.*, p.nombre AS doctor_name, p.apellido AS doctor_last_name, p2.nombre AS patient_name, p2.apellido AS patient_last_name, p2.fecha_nacimiento AS patient_birth_date FROM ordenes_de_trabajo o JOIN personas p ON o.rut_doctor = p.rut JOIN personas p2 ON o.rut_paciente = p2.rut WHERE o.id = ?`;
+            const sql = `SELECT o.id,o.numero_ficha,o.fecha_creacion,o.rut_paciente,o.centro,o.protesis,o.tipo_trabajo,o.completitud,o.color,o.terminacion,o.indicaciones,o.ubicacion,o.licencia,o.tipo_factura,o.fecha_facturacion,o.rut_doctor,p.nombre AS doctor_name,p.apellido AS doctor_last_name, p2.nombre AS patient_name, p2.apellido AS patient_last_name, p2.fecha_nacimiento AS patient_birth_date ,c.nombre_color,co.nombre_completitud,pr.nombre_protesis,tt.nombre_trabajo,te.nombre_terminacion,ub.nombre_ubicaciones,l.nombre_licencia,ch.nombre_centro,tf.nombre_tipo FROM ordenes_de_trabajo o  JOIN personas p  ON o.rut_doctor = p.rut  JOIN personas p2  ON o.rut_paciente = p2.rut  JOIN color c ON o.color = c.id JOIN completitud co ON o.completitud = co.id JOIN centros_hospitalarios ch ON o.centro = ch.id JOIN protesis pr ON o.protesis = pr.id JOIN tipo_trabajo tt ON o.tipo_trabajo = tt.id JOIN terminacion te ON o.terminacion = te.id JOIN ubicaciones ub ON o.ubicacion = ub.id JOIN licencias l ON o.licencia = l.id JOIN tipo_factura tf ON o.tipo_factura = tf.id WHERE o.id = ?;`;
             db.query(sql, [id], (error, result) => {
                 if (error) {
                     console.error('Error executing query:', error);
