@@ -6,6 +6,7 @@ const routesLogin = require('./routes/Login.routes');
 const routesPersonas = require('./routes/Persona.routes');
 const routesOrder = require('./routes/Ordenes.routes');
 const routesDashboard = require('./routes/Dashboard.routes');
+const routesEtapas = require('./routes/Etapas.routes');
 
 const cors = require('cors')
 
@@ -24,7 +25,13 @@ app.use(cors({
 //app.use(cookieParser());
 app.use(bodyParser.urlencoded({ extended: true }));
 
-app.use('/api', routesLogin, routesPersonas, routesOrder, routesDashboard);
+app.use('/api',
+  routesLogin,
+  routesPersonas,
+  routesOrder,
+  routesDashboard,
+  routesEtapas
+);
 
 app.listen(8081, () => {
   console.log('Servidor escuchando en el puerto 8081');

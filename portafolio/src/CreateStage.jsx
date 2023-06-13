@@ -1,10 +1,12 @@
 import axios from "axios";
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
+import AlertComponent from "./components/AlertComponent";
 
 function CreateStage() {
   const navigate = useNavigate();
   const { id, number } = useParams();
+  const token = localStorage.getItem("token");
   const [data, setData] = useState({
     id_orden: id,
     nro_ficha: number,
@@ -12,7 +14,6 @@ function CreateStage() {
     id_estado: "",
     fecha_envio: "",
     fecha_entrega: "",
-    fecha_inicio_estado: new Date(),
     descripcion: "",
   });
   const [emptyFieldsMessage, setEmptyFieldsMessage] = useState(false);
@@ -23,13 +24,17 @@ function CreateStage() {
   const [deadlineErrorMessage, setDeadlineErrorMessage] = useState(false);
   const [descriptionErrorMessage, setDescriptionErrorMessage] = useState(false);
   const [descriptionMessage, setDescriptionMessage] = useState(false);
-  const [errorMessage, setErrorMessage] = useState(false);
-  const handleClose = () => {
-    setErrorMessage(false);
+  const [deliveryMessage, setDeliveryMessage] = useState("");
+  const [deadlineMessage, setDeadlineMessage] = useState("false");
+
+  const handleCloseEmpty = () => {
+    setEmptyFieldsMessage(false);
   };
+
   useEffect(() => {
     console.log(id, number);
   }, []);
+
   const handleSubmit = (event) => {
     event.preventDefault();
     // Error handler
@@ -95,8 +100,16 @@ function CreateStage() {
       selectedShippingDate > maxShippingDate
     ) {
       setShippingDateErrorMessage(true);
+      setDeliveryMessage("Debe ser entre hoy y un año más.");
       hasError = true;
       console.log(minShippingDate, maxShippingDate, selectedShippingDate);
+    } else {
+      setShippingDateErrorMessage(false);
+    }
+    if (data.fecha_envio === "") {
+      setShippingDateErrorMessage(true);
+      setDeliveryMessage("Campo obligatorio");
+      hasError = true;
     } else {
       setShippingDateErrorMessage(false);
     }
@@ -115,6 +128,14 @@ function CreateStage() {
       selectedDeadlineDate > maxDeadlineDate
     ) {
       setDeadlineErrorMessage(true);
+      setDeadlineMessage("Debe ser entre hoy y 12 meses más.");
+      hasError = true;
+    } else {
+      setDeadlineErrorMessage(false);
+    }
+    if (data.fecha_entrega === "") {
+      setDeadlineErrorMessage(true);
+      setDeadlineMessage("Campo obligatorio");
       hasError = true;
     } else {
       setDeadlineErrorMessage(false);
@@ -130,18 +151,32 @@ function CreateStage() {
     } else {
       setDescriptionErrorMessage(false);
     }
+    // Check if any required fields are empty
+    if (
+      data.id_etapa === "" ||
+      data.id_estado === "" ||
+      data.fecha_envio === "" ||
+      data.fecha_entrega === ""
+    ) {
+      setEmptyFieldsMessage(true);
+      return;
+    }
+    setEmptyFieldsMessage(false);
     if (hasError) {
       return;
     }
     axios
-      .post(
-        "http://localhost:8081/createStage/" + { id } + "/" + { number },
-        data
-      )
+      .post(`http://localhost:8081/api/etapas/${id}/${number}`, data, {
+        headers: {
+          Authorization: `Bearer ${token}`, // Include the token in the Authorization header
+        },
+      })
       .then(() => {
         navigate(`/stages/${id}`);
       })
-      .catch((err) => console.log(err));
+      .catch((err) => {
+        console.log(data), console.log(err);
+      });
   };
 
   return (
@@ -149,19 +184,10 @@ function CreateStage() {
       <h2>Cambio de etapa de orden Nro° {number}</h2>
       <div className="col-12">
         {emptyFieldsMessage && (
-          <div
-            className="alert alert-danger alert-dismissible fade show"
-            role="alert"
-          >
-            <div className="d-flex justify-content-between">
-              <strong>
-                Por favor, complete todos los campos obligatorios.
-              </strong>
-              <button type="button" className="close" onClick={handleClose}>
-                <span aria-hidden="true">&times;</span>
-              </button>
-            </div>
-          </div>
+          <AlertComponent
+            emptyFieldsMessage={emptyFieldsMessage}
+            handleCloseEmpty={handleCloseEmpty}
+          />
         )}
       </div>
       <form className="row g-3 p-4" onSubmit={handleSubmit}>
@@ -227,7 +253,7 @@ function CreateStage() {
           {shippingDateErrorMessage && (
             <div className="col-12">
               <div style={styles.error}>
-                <span>Debe ser entre hoy hasta el próximo año</span>
+                <span>{deliveryMessage}</span>
               </div>
             </div>
           )}
@@ -249,7 +275,7 @@ function CreateStage() {
           {deadlineErrorMessage && (
             <div className="col-12">
               <div style={styles.error}>
-                <span>Debe ser entre hoy hasta los próximos 14 meses</span>
+                <span>{deadlineMessage}</span>
               </div>
             </div>
           )}

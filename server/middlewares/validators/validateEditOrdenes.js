@@ -97,8 +97,8 @@ const validateEditOrdenes = () => {
 
         check('indications', 'Indicaciones son inválidas')
             .optional({ checkFalsy: true })
-            .isLength({ max: 300 })
-            .withMessage('Las indicaciones deben tener menos de 300 caracteres')
+            .isLength({ max: 255 })
+            .withMessage('Las indicaciones deben tener maximo 255 caracteres')
             .escape(),
 
         check('billing', 'Tipo de factura es inválido')

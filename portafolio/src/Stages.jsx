@@ -1,5 +1,5 @@
 import axios from "axios";
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { useParams, Link, useNavigate } from "react-router-dom";
 import DataTable from "react-data-table-component";
 import DataTableExtensions from "react-data-table-component-extensions";
@@ -8,11 +8,9 @@ import { DotSpinner } from "@uiball/loaders";
 
 function Stages() {
   const navigate = useNavigate();
+  const token = localStorage.getItem("token");
   const { id } = useParams();
   const [data, setData] = useState([]);
-  const [parsedCreationDates, setParsedCreationDates] = useState([]);
-  const [parsedDeliveryDates, setParsedDeliveryDates] = useState([]);
-  const [parsedDeadlineDates, setParsedDeadlineDates] = useState([]);
   const [dataLoaded, setDataLoaded] = useState(false);
 
   const columns = [
@@ -84,23 +82,17 @@ function Stages() {
   }, [data]);
 
   useEffect(() => {
-    axios.get("http://localhost:8081/getStages/" + id).then((res) => {
-      const formattedDates = res.data.Result.map((stage) =>
-        formatDate(stage.fecha_inicio_estado)
-      );
-      const formattedDeliveryDates = res.data.Result.map((stage) =>
-        formatDate(stage.fecha_entrega)
-      );
-      const formattedDeadlineDates = res.data.Result.map((stage) =>
-        formatDate(stage.fecha_envio)
-      );
-      setData(res.data.Result);
-      console.log(res.data.Result);
-      setParsedCreationDates(formattedDates);
-      setParsedDeliveryDates(formattedDeliveryDates);
-      setParsedDeadlineDates(formattedDeadlineDates);
-      setDataLoaded(true);
-    });
+    axios
+      .get("http://localhost:8081/api/etapas/" + id, {
+        headers: {
+          Authorization: `Bearer ${token}`, // Include the token in the Authorization header
+        },
+      })
+      .then((res) => {
+        console.log(res.data.data);
+        setData(res.data.data);
+        setDataLoaded(true);
+      });
   }, []);
 
   const formatDate = (creationDate) => {
