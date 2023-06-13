@@ -115,6 +115,15 @@ function Order() {
           <button
             onClick={() => {
               // Redirect to the userEdit page
+              window.location.href = `/ViewOrder/${row.id}`;
+            }}
+            className="btn btn-outline-success btn-sm me-2"
+          >
+            Ver
+          </button>
+          <button
+            onClick={() => {
+              // Redirect to the userEdit page
               window.location.href = `/orderEdit/${row.id}`;
             }}
             className="btn btn-outline-primary btn-sm me-2"
@@ -130,7 +139,7 @@ function Order() {
         </>
       ),
       ignoreRowClick: true,
-      minWidth: "200px",
+      minWidth: "250px",
     },
   ];
 

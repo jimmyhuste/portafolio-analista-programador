@@ -1,4 +1,3 @@
-import React from "react";
 import Login from "./Login";
 import { BrowserRouter, Route, Routes } from "react-router-dom";
 import "./style.css";
@@ -15,6 +14,7 @@ import Stages from "./Stages";
 import EditStages from "./EditStages";
 import CreateStage from "./CreateStage";
 import ViewUser from "./ViewUser";
+import ViewOrder from "./ViewOrder";
 
 function App() {
   return (
@@ -29,6 +29,7 @@ function App() {
           <Route path="/createuser" element={<CreateUser />}></Route>
           <Route path="/userEdit/:id" element={<EditUser />}></Route>
           <Route path="/orders" element={<Order />}></Route>
+          <Route path="viewOrder/:id" element={<ViewOrder />}></Route>
           <Route path="/createorder" element={<CreateOrder />}></Route>
           <Route path="/orderEdit/:id" element={<EditOrder />}></Route>
           <Route path="/stages/:id" element={<Stages />}></Route>
