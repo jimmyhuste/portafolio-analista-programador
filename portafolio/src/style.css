@@ -151,3 +151,11 @@
   font-family: "Helvetica Neue", Arial, sans-serif; /* Added font-family */
   font-size: 1em;
 }
+
+.cardStages {
+  color: #bb23234e;
+}
+
+.maxHeight {
+  max-height: 25px;
+}

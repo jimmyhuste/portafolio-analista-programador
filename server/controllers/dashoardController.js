@@ -29,11 +29,28 @@ dashboardController.getDashboardData = (req, res) => {
                     responseData.orders = ordersCount;
                 }
 
-                res.json({
-                    responseData,
-                    Status: 'Success',
-                });
+                dashboardModel.getEtapasCount((error, etapasCount) => {
+                    if (error) {
+                        console.error('Error getting etapas count:', error);
+                        responseData.etapas = 'Error';
+                    } else {
+                        responseData.etapas = etapasCount;
+                    }
 
+                    dashboardModel.getEstadosCount((error, estadosCount) => {
+                        if (error) {
+                            console.error('Error getting estados count:', error);
+                            responseData.estados = 'Error';
+                        } else {
+                            responseData.estados = estadosCount;
+                        }
+
+                        res.json({
+                            responseData,
+                            Status: 'Success',
+                        });
+                    });
+                });
             });
         });
     });
