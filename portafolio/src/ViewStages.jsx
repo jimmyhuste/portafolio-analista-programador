@@ -24,6 +24,19 @@ function ViewStages() {
     nombre_estados: "",
     nombre_etapas: "",
   });
+  const formatDate = (date) => {
+    if (date) {
+      date = new Date(date);
+    } else {
+      return "No se encontró fecha";
+    }
+    const year = date.getFullYear();
+    const month = ("0" + (date.getMonth() + 1)).slice(-2);
+    const day = ("0" + date.getDate()).slice(-2);
+    const dateFormatted = `${day}-${month}-${year}`;
+
+    return dateFormatted;
+  };
 
   useEffect(() => {
     axios
@@ -36,18 +49,12 @@ function ViewStages() {
         console.log(res);
         const creationDate = new Date(res.data.data.fecha_inicio_estado);
         creationDate.setDate(creationDate.getDate() + 1);
-        const creationDateFormatted =
-          creationDate.getFullYear() +
-          "-" +
-          ("0" + (creationDate.getMonth() + 1)).slice(-2) +
-          "-" +
-          ("0" + creationDate.getDate()).slice(-2);
         setData({
           ...data,
           descripcion: res.data.data.descripcion,
-          fecha_entrega: res.data.data.fecha_entrega,
-          fecha_envio: res.data.data.fecha_envio,
-          fecha_inicio_estado: creationDateFormatted,
+          fecha_entrega: formatDate(res.data.data.fecha_entrega),
+          fecha_envio: formatDate(res.data.data.fecha_envio),
+          fecha_inicio_estado: formatDate(res.data.data.fecha_inicio_estado),
           id: res.data.data.id,
           id_estado: res.data.data.id_estado,
           id_etapa: res.data.data.id_etapa,
@@ -70,33 +77,6 @@ function ViewStages() {
         setDataLoaded(true);
       });
   }, []);
-
-  useEffect(() => {
-    const creationDate = new Date(data.creationDate);
-    const billingDate = new Date(data.billingDate);
-    const patientDate = new Date(data.patientBirthDate);
-    const creationDateFormatted =
-      ("0" + creationDate.getDate()).slice(-2) +
-      "-" +
-      ("0" + (creationDate.getMonth() + 1)).slice(-2) +
-      "-" +
-      creationDate.getFullYear();
-    const billingDateFormatted =
-      ("0" + billingDate.getDate()).slice(-2) +
-      "-" +
-      ("0" + (billingDate.getMonth() + 1)).slice(-2) +
-      "-" +
-      billingDate.getFullYear();
-    const patientDateFormatted =
-      ("0" + patientDate.getDate()).slice(-2) +
-      "-" +
-      ("0" + (patientDate.getMonth() + 1)).slice(-2) +
-      "-" +
-      patientDate.getFullYear();
-    setParsedInitialDate(creationDateFormatted);
-    setParsedDeliveryDate(patientDateFormatted);
-    setParsedDeadlineDate(billingDateFormatted);
-  }, [data.creationDate, data.billingDate, data.patientBirthDate]);
 
   if (!dataLoaded) {
     return (
@@ -136,7 +116,10 @@ function ViewStages() {
                     Fecha de entrega: {data.fecha_entrega}
                   </div>
                   <div className="d-flex m-2 col-12 justify-content-center userDetails">
-                    Descripcion: {data.descripcion}
+                    Descripcion:{" "}
+                    {data?.descripcion
+                      ? data?.descripcion
+                      : "No hay descripción"}
                   </div>
                 </div>
               </div>

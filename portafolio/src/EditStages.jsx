@@ -58,7 +58,6 @@ function EditStages() {
         },
       })
       .then((res) => {
-        console.log(res);
         const creationDate = new Date(res.data.data.fecha_inicio_estado);
         creationDate.setDate(creationDate.getDate() + 1);
         const creationDateFormatted =
@@ -79,6 +78,7 @@ function EditStages() {
           id_orden: res.data.data.id_orden,
           nro_ficha: res.data.data.nro_ficha,
         });
+
         setSelecteDeliveryDate(
           res.data.data.fecha_envio
             ? new Date(res.data.data.fecha_envio)
@@ -235,10 +235,11 @@ function EditStages() {
     if (hasError) {
       return;
     }
+
     const requestData = {
       ...data,
-      fecha_entrega: data.fecha_entrega,
-      fecha_envio: data.fecha_envio,
+      fecha_entrega: formattedDeadineDate,
+      fecha_envio: formattedDeliveryDate,
     };
 
     if (requestData.fecha_entrega) {
@@ -258,7 +259,6 @@ function EditStages() {
         },
       })
       .then((res) => {
-        console.log(res);
         if (res.data.Status === "Success") {
           let timerInterval;
           swalEdited.fire({

@@ -59,7 +59,7 @@ function Stages() {
               // Redirect to the userEdit page
               navigate(`/viewStage/${row.id}`);
             }}
-            className="btn btn-outline-primary btn-sm me-2"
+            className="btn btn-outline-success btn-sm me-2"
           >
             Ver
           </button>
