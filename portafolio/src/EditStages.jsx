@@ -286,7 +286,7 @@ function EditStages() {
 
   return (
     <div className="d-flex flex-column mx-auto align-items-center pt-2 mt-3 border  w-75">
-      <h2>Edición etapa de orden N°{data.id_orden}</h2>
+      <h2>Edición etapa de orden N°{data.nro_ficha}</h2>
       <div className="col-12">
         {emptyFieldsMessage && (
           <AlertComponent

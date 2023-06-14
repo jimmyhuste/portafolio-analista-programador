@@ -15,6 +15,7 @@ import EditStages from "./EditStages";
 import CreateStage from "./CreateStage";
 import ViewUser from "./ViewUser";
 import ViewOrder from "./ViewOrder";
+import ViewStages from "./ViewStages";
 
 function App() {
   return (
@@ -33,6 +34,7 @@ function App() {
           <Route path="/createorder" element={<CreateOrder />}></Route>
           <Route path="/orderEdit/:id" element={<EditOrder />}></Route>
           <Route path="/stages/:id" element={<Stages />}></Route>
+          <Route path="/viewStage/:id" element={<ViewStages />}></Route>
           <Route path="/editStages/:id" element={<EditStages />}></Route>
           <Route
             path="/createStage/:id/:number"

@@ -17,7 +17,7 @@ class Etapas {
 
   static getById(id) {
     return new Promise((resolve, reject) => {
-      const query = 'SELECT * FROM historial_ordenes_etapas_estados WHERE id = ?';
+      const query = 'SELECT hoee.*, e.nombre_estados, et.nombre_etapas FROM historial_ordenes_etapas_estados hoee JOIN estados e ON hoee.id_estado = e.id JOIN etapas et ON hoee.id_etapa = et.id WHERE hoee.id = ?;';
 
       db.query(query, [id], (error, results) => {
         if (error) {

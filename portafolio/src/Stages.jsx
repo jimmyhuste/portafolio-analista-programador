@@ -57,6 +57,15 @@ function Stages() {
           <button
             onClick={() => {
               // Redirect to the userEdit page
+              navigate(`/viewStage/${row.id}`);
+            }}
+            className="btn btn-outline-primary btn-sm me-2"
+          >
+            Ver
+          </button>
+          <button
+            onClick={() => {
+              // Redirect to the userEdit page
               navigate(`/editStages/${row.id}`);
             }}
             className="btn btn-outline-primary btn-sm me-2"
@@ -74,7 +83,7 @@ function Stages() {
         </>
       ),
       ignoreRowClick: true,
-      minWidth: "200px",
+      minWidth: "250px",
     },
   ];
 
